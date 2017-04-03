@@ -9,16 +9,17 @@ import time
 import curses
 from ip_connection import IPConnection
 from ip_header import IP
-
+from ip_whois import WHOISClient
 
 # map encoding display offset descriptions for text UI
 # first tuple element is horizontal offset, second is max length
 display_offsets = {"SRCIP" : ( 0, 15) ,
                    "RX"    : (16,  4) ,
                    "DSTIP" : (21, 15) ,
-                   "PROTO" : (37,  5) ,
-                   "TIME"  : (45,  4) ,
-                   "DATA"  : (51, 15) }
+                   "PROTO" : (38,  5) ,
+                   "TIME"  : (46,  4) ,
+                   "DATA"  : (52, 8) ,
+                   "FROM"  : (62, 15)  }
 
 
 class GlobalState(object):
@@ -56,6 +57,9 @@ class GlobalState(object):
         
         offset = display_offsets["DATA"]
         self.stdscr.addnstr(y, offset[0], "BYTES", offset[1])
+
+        offset = display_offsets["FROM"]
+        self.stdscr.addnstr(y, offset[0], "FROM", offset[1])
 
 
     def __format_time(self, time):
@@ -103,7 +107,13 @@ class GlobalState(object):
 
         
         offset = display_offsets["DATA"]
-        self.stdscr.addnstr(y, offset[0] + 1, str(connection.data), offset[1], attr)
+        self.stdscr.addnstr(y, offset[0] + 1, str(connection.data),
+                            offset[1], attr)
+
+
+        offset = display_offsets["FROM"]
+        self.stdscr.addnstr(y, offset[0] + 1, str(connection.src_whois),
+                            offset[1], attr)
 
         
         
@@ -130,12 +140,21 @@ class GlobalState(object):
 
                                         
         self.stdscr.refresh()
-        
+
+def runWhois(state):
+    connectionTuples = []
+    connectionTuples.append( (state.udp_connections, state.udp_lock) ) 
+    connectionTuples.append( (state.tcp_connections, state.tcp_lock) )
+    connectionTuples.append( (state.icmp_connections, state.icmp_lock) )
+
+    whoisClient = WHOISClient(connectionTuples)
+    whoisClient.run()
         
 
 def sniff(protocol, connections, lock):
 
     sniffer = socket.socket(socket.AF_INET, socket.SOCK_RAW, protocol)
+    sniffer.bind(("192.168.69.142", 0))
     sniffer.bind(("0.0.0.0", 0))
     sniffer.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
     if os.name == "nt":
@@ -203,15 +222,18 @@ def main():
                                    args = (socket.IPPROTO_UDP,
                                            state.udp_connections,
                                            state.udp_lock))
+    thread_whois = threading.Thread(target = runWhois, args = (state,))
 
     thread_icmp.daemon = True
     thread_tcp.daemon = True
     thread_udp.daemon = True
+    thread_whois.daemon = True
 
     
     thread_icmp.start()
     thread_tcp.start()
     thread_udp.start()
+    thread_whois.start()
 
     
 
