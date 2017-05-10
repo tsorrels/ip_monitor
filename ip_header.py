@@ -4,8 +4,8 @@ from ctypes import *
 
 class IP(Structure):
     _fields_ = [
-        ("ihl",         c_ubyte, 4),
-        ("version",         c_ubyte, 4),
+        ("ihl", c_ubyte, 4),
+        ("version", c_ubyte, 4),
         ("tos", c_ubyte),
         ("len", c_ushort),
         ("id", c_ushort),

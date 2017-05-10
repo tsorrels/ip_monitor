@@ -1,7 +1,7 @@
 
 import socket
 import time
-
+from display_headers import HeaderItem
 
 MAXRESPONSESIZE = 8192
 
@@ -11,7 +11,7 @@ class WHOISClient(object):
     def __init__(self, connectionTuples):
         self.connectionTuples = connectionTuples
         self.etcHosts = self.__readEtcHosts()
-        self.logfile = open('./logfile.txt', 'a')
+        self.logfile = open('./whoislog.txt', 'a')
         
 
     def __isIpv4(self, string):
@@ -52,6 +52,8 @@ class WHOISClient(object):
         
         
     def run(self):
+        self.logfile.write('running\n')
+
         while True:
             try:
 
@@ -59,7 +61,8 @@ class WHOISClient(object):
                 # find connection with no resolution
                 for connectionTuple in self.connectionTuples:
                     for connection in connectionTuple[0]:
-                        if connection.src_whois == '':
+                        self.logfile.write('found connection\n')
+                        if connection.src_whois == None:
                             whois = self.__getWhois(connection.src_address)
                             if whois:
                                 # recheck connection
@@ -68,7 +71,7 @@ class WHOISClient(object):
                                     with connectionTuple[1]:
                                         connection.src_whois = whois
             except Exception, e:
-                self.logfilewrite(str(e) + '\n')
+                self.logfile.write(str(e) + '\n')
                     
 
     def __checkEtcHosts(self, address):
@@ -141,8 +144,20 @@ class WHOISClient(object):
         #self.logfile.close()
         
         return self.__parseWhois(response)
-        
 
 
+def Run(state):
+    connectionTuples = []
+    connectionTuples.append( (state.udp_connections, state.udp_lock) ) 
+    connectionTuples.append( (state.tcp_connections, state.tcp_lock) )
+    connectionTuples.append( (state.icmp_connections, state.icmp_lock) )
     
-    
+    client = WHOISClient(connectionTuples)
+    client.run()
+
+Threads = [Run,]
+
+Header_Extensions = [ HeaderItem('WhoIs', 10), ]
+
+
+Data_Extensions = [ 'src_whois', ]
