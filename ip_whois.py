@@ -60,9 +60,11 @@ class WHOISClient(object):
                 time.sleep(2)
                 # find connection with no resolution
                 for connectionTuple in self.connectionTuples:
+                    self.logfile.write('searching connection tuple\n')
                     for connection in connectionTuple[0]:
-                        self.logfile.write('found connection\n')
-                        if connection.src_whois == None:
+                        self.logfile.write('found connection, whois =\n' +
+                                           str(connection.src_whois))
+                        if not connection.src_whois:
                             whois = self.__getWhois(connection.src_address)
                             if whois:
                                 # recheck connection
