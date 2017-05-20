@@ -1,5 +1,5 @@
 
 clean:
-	rm *~
 	rm *.pyc
 	rm *.txt
+	rm *~

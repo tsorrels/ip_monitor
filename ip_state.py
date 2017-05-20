@@ -49,18 +49,19 @@ class GlobalState(object):
     def __load_mod(self, mod):
         try:
             importlib.import_module(mod)
-
+            extension = sys.modules[str(mod)].extension
+            
             #add headers
-            for header in sys.modules[str(mod)].Header_Extensions:
+            for header in extension.header_extensions:
                 #self.header_extensions.append(header)
                 self.display_headers.append(header)
                 
             #add connection data
-            for data in sys.modules[str(mod)].Data_Extensions:
+            for data in extension.data_extensions:
                 self.data_extensions.append(data)
             
             #add execution threads             
-            for runnable in sys.modules[str(mod)].Threads:
+            for runnable in extension.threads:
                 self.run_threads.append(runnable)
         
             

@@ -2,7 +2,7 @@
 import socket
 import time
 from display_headers import HeaderItem
-
+from ip_extension import Extension
 
 def format_time(time):
     returnString = ''
@@ -35,10 +35,16 @@ def Run(state):
         time.sleep(1)
     
 
-
 Threads = [Run,]
 
 Header_Extensions = [ HeaderItem('Time', 4), ]
 
 
 Data_Extensions = [ 'time_elapsed', ]
+
+        
+extension = Extension()
+extension.threads = Threads
+extension.header_extensions = Header_Extensions
+extension.data_extensions = Data_Extensions
+

@@ -48,7 +48,7 @@ def sniff(protocol, state):
                     if ip_header.src == connection.src and \
                     ip_header.dst == connection.dst:
                         # update connection
-                        connection.data += ip_header.len
+                        connection.data += ip_header.length
                         connection.time_last = new_time
                         connection.RX = True
                         newConnection = False                        

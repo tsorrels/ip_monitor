@@ -2,6 +2,7 @@
 import socket
 import time
 from display_headers import HeaderItem
+from ip_extension import Extension
 
 MAXRESPONSESIZE = 8192
 
@@ -163,3 +164,8 @@ Header_Extensions = [ HeaderItem('WhoIs', 10), ]
 
 
 Data_Extensions = [ 'src_whois', ]
+
+extension = Extension()
+extension.threads = [Run,]
+extension.header_extensions =  [ HeaderItem('WhoIs', 10), ]
+extension.data_extensions = [ 'src_whois', ]
