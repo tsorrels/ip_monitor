@@ -1,5 +1,7 @@
 #!/usr/bin/env python2
 
+import importlib
+import traceback
 import signal
 import threading
 import os
@@ -7,199 +9,89 @@ import struct
 import socket
 import time
 import curses
+import getopt
+import sys
 from ip_connection import IPConnection
 from ip_header import IP
-from ip_whois import WHOISClient
+from display_headers import *
+from display_item import *
+from logwriter import LogWriter
+from ip_state import GlobalState
+from ip_display import Display
+from ip_controller import Controller
 
-# map encoding display offset descriptions for text UI
-# first tuple element is horizontal offset, second is max length
-display_offsets = {"SRCIP" : ( 0, 15) ,
-                   "RX"    : (16,  4) ,
-                   "DSTIP" : (21, 15) ,
-                   "PROTO" : (38,  5) ,
-                   "TIME"  : (46,  4) ,
-                   "DATA"  : (52, 8) ,
-                   "FROM"  : (62, 15)  }
-
-
-class GlobalState(object):
-    def __init__(self):
-        self.stdscr = curses.initscr()
-        self.stdscr.keypad(1)
-        self.scr_dimmesions = self.stdscr.getmaxyx() # returns (height, width)
-
-        
-        self.udp_connections = []
-        self.udp_lock = threading.Lock()
-        self.tcp_connections = []
-        self.tcp_lock = threading.Lock()
-        self.icmp_connections = []
-        self.icmp_lock = threading.Lock()
-
-        curses.curs_set(0)
-        curses.noecho()
-        curses.cbreak()                        
-
-
-    def __write_header(self):
-        y = 0
-        offset = display_offsets["SRCIP"]
-        self.stdscr.addnstr(y, offset[0], "SOURCE IP", offset[1])
-
-        offset = display_offsets["DSTIP"]
-        self.stdscr.addnstr(y, offset[0], "DESTINATION IP", offset[1])
-
-        offset = display_offsets["PROTO"]
-        self.stdscr.addnstr(y, offset[0], "PROTOCOL", offset[1])
-
-        offset = display_offsets["TIME"]
-        self.stdscr.addnstr(y, offset[0], "TIME", offset[1])
-        
-        offset = display_offsets["DATA"]
-        self.stdscr.addnstr(y, offset[0], "BYTES", offset[1])
-
-        offset = display_offsets["FROM"]
-        self.stdscr.addnstr(y, offset[0], "FROM", offset[1])
-
-
-    def __format_time(self, time):
-        returnString = ''
-        if time < 60:
-            returnString = str(int(time)) + 's'
-
-        elif time < 60 * 60:
-            returnString = str(int(time) / 60) + 'm'
-
-        else:
-            returnString = str(max(99, int(time) / 60 / 60)) + 'h'
-
-            
-        return returnString
-            
-    def __write_line(self, y, connection, time):
-
-        attr = curses.A_DIM
-
-        if (time - connection.time_last) < 1:
-            attr = curses.A_BOLD
-            offset = display_offsets["RX"]
-            self.stdscr.addnstr(y, offset[0]  + 1, "->", offset[1], attr)
-
-        elif (time - connection.time_last) < 15:
-            attr = curses.A_NORMAL
-        
-        offset = display_offsets["SRCIP"]
-        self.stdscr.addnstr(y, offset[0]  + 1, connection.src_address, offset[1],
-                            attr)
-
-
-        offset = display_offsets["DSTIP"]
-        self.stdscr.addnstr(y, offset[0] + 1, connection.dst_address, offset[1],
-                            attr)
-
-        offset = display_offsets["PROTO"]
-        self.stdscr.addnstr(y, offset[0] + 1, connection.proto, offset[1], attr)
-
-
-        offset = display_offsets["TIME"]
-        self.stdscr.addnstr(y, offset[0] + 1, self.__format_time(
-            time - connection.time_last), offset[1], attr)
-
-        
-        offset = display_offsets["DATA"]
-        self.stdscr.addnstr(y, offset[0] + 1, str(connection.data),
-                            offset[1], attr)
-
-
-        offset = display_offsets["FROM"]
-        self.stdscr.addnstr(y, offset[0] + 1, str(connection.src_whois),
-                            offset[1], attr)
-
-        
-        
-    def __display_helper(self, counter, connections, lock):
-        now = time.time()
-        with lock:
-            for connection in connections:
-                self.__write_line(counter, connection, now)
-                counter = counter + 1
-
-        return counter
-
+display = Display()
         
 
-    def display(self):
-        self.stdscr.clear()
-        self.__write_header()
-        y = 1
+def sniff(protocol, state):
 
-        # these functions use the counter and return the updated value
-        y = self.__display_helper(y, self.tcp_connections, self.tcp_lock)
-        y = self.__display_helper(y, self.udp_connections, self.udp_lock)
-        y = self.__display_helper(y, self.icmp_connections, self.icmp_lock)
-
-                                        
-        self.stdscr.refresh()
-
-def runWhois(state):
-    connectionTuples = []
-    connectionTuples.append( (state.udp_connections, state.udp_lock) ) 
-    connectionTuples.append( (state.tcp_connections, state.tcp_lock) )
-    connectionTuples.append( (state.icmp_connections, state.icmp_lock) )
-
-    whoisClient = WHOISClient(connectionTuples)
-    whoisClient.run()
-        
-
-def sniff(protocol, connections, lock):
-
+    connections = state.connections_map[protocol][0]
+    lock = state.connections_map[protocol][1]
+    
     sniffer = socket.socket(socket.AF_INET, socket.SOCK_RAW, protocol)
-    sniffer.bind(("192.168.69.142", 0))
     sniffer.bind(("0.0.0.0", 0))
     sniffer.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
     if os.name == "nt":
         sniffer.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
+
+    try:        
+        while True:
+
+            raw_buffer = sniffer.recvfrom(65565)[0]        
+            ip_header = IP(raw_buffer[0:20])
         
-    while True:
 
-        raw_buffer = sniffer.recvfrom(65565)[0]        
-        ip_header = IP(raw_buffer[0:20])
-        
-        #print "Protocol: %s %s -> %s" % (ip_header.protocol, \
-                                    # ip_header.src_address, \
-                                     #     ip_header.dst_address)
+            newConnection = True
+            new_time = time.time()
+            with lock:
+                for connection in connections:
+                    if ip_header.src == connection.src and \
+                    ip_header.dst == connection.dst:
+                        # update connection
+                        connection.data += ip_header.length
+                        connection.time_last = new_time
+                        connection.RX = True
+                        newConnection = False                        
+                        break
 
-        newConnection = True
-        new_time = time.time()
-        with lock:
-            for connection in connections:
-                if ip_header.src == connection.src and \
-                ip_header.dst == connection.dst:
-                    # update connection
-                    connection.data += ip_header.len
-                    connection.time_last = new_time
-                    connection.RX = True
-                    newConnection = False
-                    break
-
-        if newConnection:
+            if newConnection:
             # append is thread safe
             # this is the only thread writing to this list
-            connections.append(IPConnection(ip_header, new_time))
-                                
+                connections.append(IPConnection(ip_header,
+                                                new_time,
+                                                state.data_extensions))
+                
+                
+    except Exception as e:
+        state.logwriter.write('error', str(e) + '\n')
+        #traceback.print_exc(limit=None, file=file_handle)
 
 
 def SIGINT_handler(signal, frame):
     curses.endwin()
-    exit(0)
-            
+    exit(0)            
 
-def main():
-
-    state = GlobalState()
-
-    signal.signal(signal.SIGINT, SIGINT_handler)
+def SIGWINCH_handler(signal, frame):
+    #pass
+    display.update_window()
     
+    
+def main():
+    
+    (optlist, args) = getopt.getopt(sys.argv[1:], 'p')
+
+    state = GlobalState(args)
+    display.state = state
+
+    controller = Controller(display)
+    display.controller = controller
+    
+    
+    signal.signal(signal.SIGINT, SIGINT_handler)
+
+    signal.signal(signal.SIGWINCH, SIGWINCH_handler)
+    
+    # TODO: support Windows
     if os.name == "nt":
 	print 'OS is "nt"'
         thread_win = threading.Thread(target = sniff,
@@ -211,39 +103,33 @@ def main():
 
     # else
     thread_icmp = threading.Thread(target = sniff,
-                                   args = (socket.IPPROTO_ICMP,
-                                           state.icmp_connections, 
-                                           state.icmp_lock))
+                                   args = (socket.IPPROTO_ICMP, state))
     thread_tcp = threading.Thread(target = sniff,
-                                   args = (socket.IPPROTO_TCP,
-                                           state.tcp_connections,
-                                           state.tcp_lock))
+                                   args = (socket.IPPROTO_TCP, state))
     thread_udp = threading.Thread(target = sniff,
-                                   args = (socket.IPPROTO_UDP,
-                                           state.udp_connections,
-                                           state.udp_lock))
-    thread_whois = threading.Thread(target = runWhois, args = (state,))
+                                   args = (socket.IPPROTO_UDP, state))
+
 
     thread_icmp.daemon = True
     thread_tcp.daemon = True
     thread_udp.daemon = True
-    thread_whois.daemon = True
 
-    
+    # start sniffer threads
     thread_icmp.start()
     thread_tcp.start()
     thread_udp.start()
-    thread_whois.start()
 
-    
+    # start extension threads
+    for run in state.run_threads:
+        thread = threading.Thread(target = run, args = (state, ))
+        thread.daemon = True
+        thread.start()
 
-    
+    # run UI on this thread
     while True:
         time.sleep(.5)
-        state.display()
+        display.run()
     
-
-
 
 if __name__ == "__main__":
     main()
