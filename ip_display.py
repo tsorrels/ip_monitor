@@ -16,7 +16,7 @@ from display_headers import *
 from display_item import *
 from logwriter import LogWriter
 
-
+screen = curses.initscr()
 
 class Display(object):
     def __init__(self):
@@ -24,7 +24,7 @@ class Display(object):
         self.num_header_rows = 1 # TODO: replace this magic number
         self.cur_row = 1
         self.num_output_rows = 0
-        self.stdscr = curses.initscr()
+        self.stdscr = screen
         self.stdscr.keypad(1)
         self.stdscr.nodelay(1)
         self.scr_dimmesions = self.stdscr.getmaxyx() # returns (height, width)
@@ -110,21 +110,22 @@ class Display(object):
             if ch != -1:
                 cur_line = self.stdscr.instr(self.cur_row, 0)
                 self.controller.do_operation(ch, cur_line)
-            self.state.logwriter.write('error', str(ch))
-            #if ch == curses.KEY_RESIZE:
-            #    self.update_window()
+            #self.state.logwriter.write('error', str(ch))
+            if ch == curses.KEY_RESIZE:
+                self.update_window()
 
             #else:
             #time.sleep(.5)
             self.display()
                 
     def update_window(self):
-        pass
         #self.stdscr = curses.initscr()
         #self.stdscr.keypad(1)
+        #(y, x) = screen.getmaxyx()
         self.scr_dimmesions = self.stdscr.getmaxyx() # returns (height, width)
-
+        screen.refresh()
         #self.scr_dimmesions = self.stdscr.getmaxyx()
         #self.display()
         #self.state.logwriter.write('error', str(self.scr_dimmesions))
-        self.state.logwriter.write('error', str(self.stdscr.getmaxyx()))
+        #self.state.logwriter.write('error', str(self.stdscr.getmaxyx()) + '\n')
+        #self.state.logwriter.write('error', str(y) +','+str(x) + '\n')

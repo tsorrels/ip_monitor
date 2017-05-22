@@ -27,4 +27,3 @@ class IPConnection(object):
         self.attr_names.append('dst_address')
         self.attr_names.append('proto')
         self.attr_names.append('data')
-        
