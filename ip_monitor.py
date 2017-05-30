@@ -19,26 +19,29 @@ from logwriter import LogWriter
 from ip_state import GlobalState
 from ip_display import Display
 from ip_controller import Controller
+from ip_ethheader import EthHeader
 
 display = Display()
         
 
-def sniff(protocol, state):
+def sniff(state):
 
-    connections = state.connections_map[protocol][0]
-    lock = state.connections_map[protocol][1]
+    connections = state.all_connections
+    lock = state.all_lock
     
-    sniffer = socket.socket(socket.AF_INET, socket.SOCK_RAW, protocol)
-    sniffer.bind(("0.0.0.0", 0))
-    sniffer.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
-    if os.name == "nt":
-        sniffer.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
+    sniffer = socket.socket(socket.AF_PACKET, socket.SOCK_RAW,
+                            socket.ntohs(0x0003))
+    sniffer.bind(("wlan0", 0))
+    #sniffer.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
+    #if os.name == "nt":
+    #    sniffer.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
 
     try:        
         while True:
 
-            raw_buffer = sniffer.recvfrom(65565)[0]        
-            ip_header = IP(raw_buffer[0:20])
+            raw_buffer = sniffer.recvfrom(65565)[0]
+            eth_header = EthHeader(raw_buffer[0:14])
+            ip_header = IP(raw_buffer[14:34])
         
 
             newConnection = True
@@ -58,6 +61,7 @@ def sniff(protocol, state):
             # append is thread safe
             # this is the only thread writing to this list
                 connections.append(IPConnection(ip_header,
+                                                eth_header,
                                                 new_time,
                                                 state.data_extensions))
                 
@@ -92,32 +96,34 @@ def main():
     signal.signal(signal.SIGWINCH, SIGWINCH_handler)
     
     # TODO: support Windows
-    if os.name == "nt":
-	print 'OS is "nt"'
-        thread_win = threading.Thread(target = sniff,
-                                   args = (socket.IPPROTO_IP,))
-        while True:
-            time.sleep(5)
+    #if os.name == "nt":
+	#print 'OS is "nt"'
+        #thread_win = threading.Thread(target = sniff,
+        #                           args = (socket.IPPROTO_IP,))
+        #while True:
+        #    time.sleep(5)
 
-        return
+        #return
 
     # else
-    thread_icmp = threading.Thread(target = sniff,
-                                   args = (socket.IPPROTO_ICMP, state))
-    thread_tcp = threading.Thread(target = sniff,
-                                   args = (socket.IPPROTO_TCP, state))
-    thread_udp = threading.Thread(target = sniff,
-                                   args = (socket.IPPROTO_UDP, state))
+    #thread_icmp = threading.Thread(target = sniff,
+     #                              args = (socket.IPPROTO_ICMP, state))
+    #thread_tcp = threading.Thread(target = sniff,
+     #                              args = (socket.IPPROTO_TCP, state))
+    #thread_udp = threading.Thread(target = sniff,
+     #                              args = (socket.IPPROTO_UDP, state))
 
-
-    thread_icmp.daemon = True
-    thread_tcp.daemon = True
-    thread_udp.daemon = True
+    sniffer = threading.Thread(target = sniff, args = (state,))
+    sniffer.daemon = True
+    sniffer.start()
+    #thread_icmp.daemon = True
+    #thread_tcp.daemon = True
+    #thread_udp.daemon = True
 
     # start sniffer threads
-    thread_icmp.start()
-    thread_tcp.start()
-    thread_udp.start()
+    #thread_icmp.start()
+    #thread_tcp.start()
+    #thread_udp.start()
 
     # start extension threads
     for run in state.run_threads:

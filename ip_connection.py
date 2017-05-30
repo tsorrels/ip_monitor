@@ -1,10 +1,12 @@
 import time
 
 class IPConnection(object):
-    def __init__(self, ipHeader, time, attr_names = []):
+    def __init__(self, ipHeader, ethHeader, time, attr_names = []):
         self.src = ipHeader.src
         self.dst = ipHeader.dst
         self.proto = ipHeader.protocol
+        self.eth_src = ethHeader.src
+        self.eth_dst = ethHeader.dst
         self.src_address = ipHeader.src_address
         self.dst_address = ipHeader.dst_address
         self.time_begin = time

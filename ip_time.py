@@ -17,9 +17,11 @@ def format_time(time):
             
     return returnString
 
-def run_time(protocol, state):
-    (connections, lock) = state.connections_map[protocol]
-
+def run_time(state):
+    #(connections, lock) = state.connections_map[protocol]
+    connections = state.all_connections
+    lock = state.all_lock
+    
     now = time.time()
     with lock:
         for connection in connections:
@@ -29,9 +31,10 @@ def run_time(protocol, state):
 
 def Run(state):
     while True:
-        run_time(socket.IPPROTO_UDP, state)
-        run_time(socket.IPPROTO_TCP, state)
-        run_time(socket.IPPROTO_ICMP, state)
+        run_time(state)
+        #run_time(socket.IPPROTO_UDP, state)
+        #run_time(socket.IPPROTO_TCP, state)
+        #run_time(socket.IPPROTO_ICMP, state)
         time.sleep(1)
     
 
@@ -47,4 +50,3 @@ extension = Extension()
 extension.threads = Threads
 extension.header_extensions = Header_Extensions
 extension.data_extensions = Data_Extensions
-
