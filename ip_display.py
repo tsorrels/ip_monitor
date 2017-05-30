@@ -96,9 +96,11 @@ class Display(object):
         y = self.num_header_rows
 
         # these functions use the counter and return the updated value
-        y = self.__display_helper(y, self.state.tcp_connections, self.state.tcp_lock)
-        y = self.__display_helper(y, self.state.udp_connections, self.state.udp_lock)
-        y = self.__display_helper(y, self.state.icmp_connections, self.state.icmp_lock)
+        y = self.__display_helper(y, self.state.all_connections, self.state.all_lock)
+        #y = self.__display_helper(y, self.state.udp_connections,
+        #                          self.state.udp_lock)
+        #y = self.__display_helper(y, self.state.icmp_connections,
+        #                          self.state.icmp_lock)
 
         self.num_output_rows = y - self.num_header_rows
         self.stdscr.refresh()

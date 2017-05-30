@@ -24,6 +24,8 @@ class GlobalState(object):
         self.logwriter = LogWriter()
         self.logwriter.add_log('error', './error_log.txt')        
         
+	self.all_connections = []
+	self.all_lock = threading.Lock()
         self.udp_connections = []
         self.udp_lock = threading.Lock()
         self.tcp_connections = []

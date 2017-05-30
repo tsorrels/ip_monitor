@@ -152,6 +152,7 @@ class WHOISClient(object):
 def Run(state):
     connectionTuples = []
     connectionTuples.append( (state.udp_connections, state.udp_lock) ) 
+    connectionTuples.append( (state.all_connections, state.all_lock) ) 
     connectionTuples.append( (state.tcp_connections, state.tcp_lock) )
     connectionTuples.append( (state.icmp_connections, state.icmp_lock) )
     
