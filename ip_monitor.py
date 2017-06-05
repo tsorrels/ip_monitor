@@ -41,6 +41,11 @@ def sniff(state):
 
             raw_buffer = sniffer.recvfrom(65565)[0]
             eth_header = EthHeader(raw_buffer[0:14])
+            if len(raw_buffer) < 34 :
+                # there is no ip header in this packet
+                state.logwriter.write('error', 'processed non-ip packet\n')
+                continue
+            
             ip_header = IP(raw_buffer[14:34])
         
 
@@ -68,6 +73,7 @@ def sniff(state):
                 
     except Exception as e:
         state.logwriter.write('error', str(e) + '\n')
+        exit(0)
         #traceback.print_exc(limit=None, file=file_handle)
 
 
@@ -87,7 +93,7 @@ def main():
     state = GlobalState(args)
     display.state = state
 
-    controller = Controller(display)
+    controller = Controller(display, state)
     display.controller = controller
     
     
