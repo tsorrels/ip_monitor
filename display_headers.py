@@ -6,9 +6,9 @@ class HeaderItem(object):
         self.offset = offset
 
 
-default_headers = [ HeaderItem("SRCIP", 13),
+default_headers = [ HeaderItem("SRCIP", 15),
                     HeaderItem("RX", 4),
-                    HeaderItem("DSTIP", 13),
+                    HeaderItem("DSTIP", 15),
                     HeaderItem("PROTO", 5),
                     HeaderItem("DATA", 8) ]
 

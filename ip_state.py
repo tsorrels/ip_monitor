@@ -37,7 +37,8 @@ class GlobalState(object):
             socket.IPPROTO_ICMP : (self.icmp_connections, self.icmp_lock),
             socket.IPPROTO_UDP : (self.udp_connections, self.udp_lock),
             socket.IPPROTO_TCP : (self.tcp_connections, self.tcp_lock) }
-        
+
+        self.cmd_extensions = []
         self.header_extensions = []
         self.data_extensions = []
         self.run_threads = []
@@ -52,6 +53,10 @@ class GlobalState(object):
         try:
             importlib.import_module(mod)
             extension = sys.modules[str(mod)].extension
+
+            #add commands
+            for cmd in extension.cmd_extensions:
+                self.cmd_extensions.append(cmd)
             
             #add headers
             for header in extension.header_extensions:
