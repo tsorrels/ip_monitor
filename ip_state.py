@@ -16,10 +16,13 @@ from display_headers import *
 from display_item import *
 from logwriter import LogWriter
 
+import socket
+import fcntl
+import struct
 
 
 class GlobalState(object):
-    def __init__(self, mods):
+    def __init__(self, optlist, mods):
 
         self.logwriter = LogWriter()
         self.logwriter.add_log('error', './error_log.txt')        
@@ -45,9 +48,24 @@ class GlobalState(object):
         
         self.display_headers = default_headers
 
+        self.permiscuous = False
+        self.interface = None
+        
+        # parse options
+        for o, a in optlist:
+            if o == '-p':
+                self.permiscuous = True
+
+            elif o in ('-i', '--interface'):
+                self.interface = a
+                                
+        # load modules
         for mod in mods:
             self.__load_mod(mod)
 
+        self.host_address = self.__get_ip_address(self.interface)
+            
+            
 
     def __load_mod(self, mod):
         try:
@@ -80,3 +98,13 @@ class GlobalState(object):
             self.logwriter.write('error', 'Other exception, ' + mod + str(e))
 
 
+    # taken from
+    # https://stackoverflow.com/questions/24196932/
+    # how-can-i-get-the-ip-address-of-eth0-in-python
+    def __get_ip_address(self, ifname):
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        return socket.inet_ntoa(fcntl.ioctl(
+            s.fileno(),
+            0x8915,  # SIOCGIFADDR
+            struct.pack('256s', ifname[:15])
+        )[20:24])

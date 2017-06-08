@@ -31,7 +31,7 @@ def sniff(state):
     
     sniffer = socket.socket(socket.AF_PACKET, socket.SOCK_RAW,
                             socket.ntohs(0x0003))
-    sniffer.bind(("wlan0", 0))
+    sniffer.bind((state.interface, 0))
     #sniffer.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
     #if os.name == "nt":
     #    sniffer.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
@@ -47,7 +47,13 @@ def sniff(state):
                 continue
             
             ip_header = IP(raw_buffer[14:34])
-        
+
+            #check if in permiscuous mode
+            if not state.permiscuous:
+                if not (ip_header.src_address == state.host_address or \
+                        ip_header.dst_address == state.host_address):
+                    state.logwriter.write('error', state.host_address)
+                    continue
 
             newConnection = True
             new_time = time.time()
@@ -88,9 +94,9 @@ def SIGWINCH_handler(signal, frame):
     
 def main():
     
-    (optlist, args) = getopt.getopt(sys.argv[1:], 'p')
+    (optlist, args) = getopt.getopt(sys.argv[1:], 'pi:')
 
-    state = GlobalState(args)
+    state = GlobalState(optlist, args)
     display.state = state
 
     controller = Controller(display, state)
