@@ -26,7 +26,7 @@ class Controller(object):
                 #TODO: return error, key can only be mapped once
                 continue
             
-            self.__operations[cmd.key] = cmd.function
+            self.__operations[ord(cmd.key)] = cmd.function
 
         
 
@@ -39,7 +39,8 @@ class Controller(object):
             self.__operations[input](data, self.state)
 
         except KeyError as e:
-            self.state.logwriter.write('error', 'invalid input:' + input +'\n')
+            self.state.logwriter.write('error', 'invalid input:' + str(input)
+                                       +'\n')
             # TODO: return false to identify bad input
             pass
 
@@ -61,30 +62,9 @@ class Controller(object):
 
     def __remove(self, data, state):
         self.state.logwriter.write('error', 'ran __remove\n')
-        connection = self.__find_connection(data)
+        connection = self.state.find_connection(data)
         if connection:
             with self.state.all_lock:
                 self.state.all_connections.remove(connection)
 
-    def __parse_line(self, line):
-        words = line.split()
-        ip_src = words[0]
-        ip_dst = words[1]
-        if ip_dst == '->':
-            ip_dst = words[2]
-
-        return (ip_src, ip_dst)
-        
-        
-
-    def __find_connection(self, data):
-        (ip_src, ip_dst) = self.__parse_line(data)
-        with self.state.all_lock:            
-            for connection in self.state.all_connections:
-                if ip_src == connection.src_address and \
-                   ip_dst == connection.dst_address:
-                    return connection
-
-        self.state.logwriter.write('error', 'did not find connection in controller: ' + data + connection.src_address + connection.dst_address + '\n')
-        return #None
                     
