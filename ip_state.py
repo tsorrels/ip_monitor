@@ -108,3 +108,28 @@ class GlobalState(object):
             0x8915,  # SIOCGIFADDR
             struct.pack('256s', ifname[:15])
         )[20:24])
+
+
+
+    def __parse_line(self, line):
+        words = line.split()
+        ip_src = words[0]
+        ip_dst = words[1]
+        if ip_dst == '->':
+            ip_dst = words[2]
+
+        return (ip_src, ip_dst)
+        
+        
+
+    def find_connection(self, data):
+        (ip_src, ip_dst) = self.__parse_line(data)
+        with self.all_lock:            
+            for connection in self.all_connections:
+                if ip_src == connection.src_address and \
+                   ip_dst == connection.dst_address:
+                    return connection
+
+        self.logwriter.write('error', 'did not find connection in controller: ' + data + connection.src_address + connection.dst_address + '\n')
+        return #None
+    

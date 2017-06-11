@@ -52,7 +52,7 @@ def sniff(state):
             if not state.permiscuous:
                 if not (ip_header.src_address == state.host_address or \
                         ip_header.dst_address == state.host_address):
-                    state.logwriter.write('error', state.host_address)
+                    #state.logwriter.write('error', state.host_address)
                     continue
 
             newConnection = True

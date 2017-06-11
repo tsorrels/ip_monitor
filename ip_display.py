@@ -57,7 +57,7 @@ class Display(object):
         if (time - connection.time_last) < 1:
             attr = curses.A_BOLD
             connection.RX = '->'
-            self.stdscr.addnstr(y, 15, "->", 4, attr)
+            #self.stdscr.addnstr(y, 15, "->", 4, attr)
 
         elif (time - connection.time_last) < 15:
             attr = curses.A_NORMAL
