@@ -168,5 +168,5 @@ Data_Extensions = [ 'src_whois', ]
 
 extension = Extension()
 extension.threads = [Run,]
-extension.header_extensions =  [ HeaderItem('WhoIs', 10), ]
+extension.header_extensions =  [ HeaderItem('WhoIs', 26), ]
 extension.data_extensions = [ 'src_whois', ]

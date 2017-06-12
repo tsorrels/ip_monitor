@@ -23,15 +23,17 @@ class Display(object):
 
         self.num_header_rows = 1 # TODO: replace this magic number
         self.cur_row = 1
+        self.cur_index = 0
+        self.win_start_index = 0
         self.num_output_rows = 0
         self.stdscr = screen
         self.stdscr.keypad(1)
         self.stdscr.nodelay(1)
-        self.scr_dimmesions = self.stdscr.getmaxyx() # returns (height, width)
+        self.scr_dimensions = self.stdscr.getmaxyx() # returns (height, width)
 
         curses.curs_set(0)
         curses.noecho()
-        curses.halfdelay(5) # set input timeout for 5 tenths of a second
+        curses.halfdelay(1) # set input timeout for 5 tenths of a second
         #curses.cbreak()                        
 
 
@@ -40,7 +42,7 @@ class Display(object):
         x = 0
 
         for header in self.state.display_headers:
-            if (x + header.length) < self.scr_dimmesions[1]:
+            if (x + header.length) < self.scr_dimensions[1]:
                 self.stdscr.addnstr(y, x, header.text, header.length)
                 x = x + header.length + 2
 
@@ -71,7 +73,7 @@ class Display(object):
             # and there is enough room on screen to display
 
             if getattr(connection, connection.attr_names[index]) and \
-               (x + self.state.display_headers[index].length)< self.scr_dimmesions[1]:
+               (x + self.state.display_headers[index].length)< self.scr_dimensions[1]:
                 self.stdscr.addnstr(y, x,
                     str(getattr(connection, connection.attr_names[index])),
                     self.state.display_headers[index].length, attr)
@@ -79,12 +81,11 @@ class Display(object):
 
         
         
-    def __display_helper(self, counter, connections, lock):
+    def __display_helper(self, counter, connections):
         now = time.time()
-        with lock:
-            for connection in connections:
-                self.__write_line(counter, connection, now)
-                counter = counter + 1
+        for connection in connections:
+            self.__write_line(counter, connection, now)
+            counter = counter + 1
 
         return counter
 
@@ -94,15 +95,35 @@ class Display(object):
         self.stdscr.clear()
         self.__write_header()
         y = self.num_header_rows
+        now = time.time()
+        for index in range(self.win_start_index,
+                           min(len(self.state.all_connections),
+                               self.win_start_index + \
+                               self.scr_dimensions[0] - \
+                               self.num_header_rows)):
+            connection = self.state.all_connections[index]
+            self.__write_line(y, connection, now)
+            y += 1
+            
+        #for connection in connections:
+        #    self.__write_line(counter, connection, now)
+        #    counter = counter + 1
 
-        # these functions use the counter and return the updated value
-        y = self.__display_helper(y, self.state.all_connections, self.state.all_lock)
-        #y = self.__display_helper(y, self.state.udp_connections,
-        #                          self.state.udp_lock)
-        #y = self.__display_helper(y, self.state.icmp_connections,
-        #                          self.state.icmp_lock)
 
-        self.num_output_rows = y - self.num_header_rows
+        
+        #try:
+            #with self.state.all_lock:
+                #start_index = self.cur_row - self.scr_dimmesions[0]
+                # these functions use the counter and return the updated value
+                #y = self.__display_helper(y, self.state.all_connections,
+                #                          self.state.all_lock)
+            #self.num_output_rows = y - self.num_header_rows
+
+        #except curses.error:
+            # adding out of range
+            #pass
+            
+
         self.stdscr.refresh()
 
 
@@ -124,7 +145,7 @@ class Display(object):
         #self.stdscr = curses.initscr()
         #self.stdscr.keypad(1)
         #(y, x) = screen.getmaxyx()
-        self.scr_dimmesions = self.stdscr.getmaxyx() # returns (height, width)
+        self.scr_dimmensions = self.stdscr.getmaxyx() # returns (height, width)
         screen.refresh()
         #self.scr_dimmesions = self.stdscr.getmaxyx()
         #self.display()

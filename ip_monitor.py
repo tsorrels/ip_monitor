@@ -145,7 +145,7 @@ def main():
 
     # run UI on this thread
     while True:
-        time.sleep(.5)
+        time.sleep(.1)
         display.run()
     
 
