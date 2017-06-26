@@ -6,13 +6,16 @@ from ip_extension import Extension
 
 MAXRESPONSESIZE = 8192
 
+HOST_STRING = "This host\n"
+
 class WHOISClient(object):
 
     # connections is a list of tuples (list of connections, lock)
-    def __init__(self, connectionTuples):
+    def __init__(self, connectionTuples, state):
         self.connectionTuples = connectionTuples
         self.etcHosts = self.__readEtcHosts()
         self.logfile = open('./whoislog.txt', 'a')
+        self.state = state
         
 
     def __isIpv4(self, string):
@@ -113,6 +116,11 @@ class WHOISClient(object):
         if name:
             return name
 
+
+        # now check if it is this host
+        elif address == self.state.host_address:
+            return HOST_STRING
+        
         # call whois
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect(('199.71.0.46', 43))
@@ -156,7 +164,7 @@ def Run(state):
     connectionTuples.append( (state.tcp_connections, state.tcp_lock) )
     connectionTuples.append( (state.icmp_connections, state.icmp_lock) )
     
-    client = WHOISClient(connectionTuples)
+    client = WHOISClient(connectionTuples, state)
     client.run()
 
 Threads = [Run,]
