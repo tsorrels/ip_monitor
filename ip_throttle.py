@@ -102,9 +102,6 @@ def toggle_throttled(data, state):
 Threads = [Run, ]
 Header_Extensions = [HeaderItem('Throttle', 10)]
 Data_Extensions = [ 'throttle_status', ]
+Cmd_Extensions = [ IPCommand('t', toggle_throttled), ]
 
-extension = Extension()
-extension.threads = Threads
-extension.header_extensions = Header_Extensions
-extension.data_extensions= Data_Extensions
-extension.cmd_extensions = [ IPCommand('t', toggle_throttled), ]
+extension = Extension(Threads, Header_Extensions, Data_Extensions, Cmd_Extensions)

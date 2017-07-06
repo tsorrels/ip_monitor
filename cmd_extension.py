@@ -1,5 +1,5 @@
 
 class CmdExtension(object):
-    def __init__(self):
-        self.key = None
-        self.function = None
+    def __init__(self, key, function):
+        self.key = key			# must be character
+        self.function = function	# must be function definition

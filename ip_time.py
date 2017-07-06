@@ -42,11 +42,6 @@ Threads = [Run,]
 
 Header_Extensions = [ HeaderItem('Time', 4), ]
 
-
 Data_Extensions = [ 'time_elapsed', ]
-
         
-extension = Extension()
-extension.threads = Threads
-extension.header_extensions = Header_Extensions
-extension.data_extensions = Data_Extensions
+extension = Extension(Threads, Header_Extensions, Data_Extensions, [])

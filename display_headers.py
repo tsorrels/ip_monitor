@@ -1,9 +1,9 @@
 
 class HeaderItem(object):
     def __init__(self, text, length, offset = None):
-        self.text = text
-        self.length = length
-        self.offset = offset
+        self.text = text	# must be string
+        self.length = length	# integer representing max character output for item
+        self.offset = offset	# not used
 
 
 default_headers = [ HeaderItem("SRCIP", 15),

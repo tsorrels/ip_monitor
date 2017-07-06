@@ -167,14 +167,4 @@ def Run(state):
     client = WHOISClient(connectionTuples, state)
     client.run()
 
-Threads = [Run,]
-
-Header_Extensions = [ HeaderItem('WhoIs', 10), ]
-
-
-Data_Extensions = [ 'src_whois', ]
-
-extension = Extension()
-extension.threads = [Run,]
-extension.header_extensions =  [ HeaderItem('WhoIs', 26), ]
-extension.data_extensions = [ 'src_whois', ]
+extension = Extension([Run,], [ HeaderItem('WhoIs', 26), ], [ 'src_whois', ], [])
