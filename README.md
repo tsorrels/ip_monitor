@@ -4,14 +4,14 @@ This project is a simple terminal IP traffic monitoring tool with simple user in
 
 To run Linux (must be root):
 
-'''bash  
+'''
 $ sudo ./ip_monitor -i interface [-p] [Extention, ...]
 
 '''
 The user must provide an interface (i.e. 'eth0'), can optionally provide the -p switch to run in permiscuous mode, and can concatinate any number of properly written extention modules that the tool will load prior to running.
 
 A execution example would be:
-'''bash
+'''
 $ sudo ./ip\_monitor -i eth0 -p ip\_time ip\_whois ip\_throttle
 '''
 
