@@ -8,7 +8,7 @@ To run in Linux (must be root):
 $ sudo ./ip_monitor -i interface [-p] [Extention, ...]
 
 ```
-The user must provide an interface (i.e. 'eth0'), can optionally provide the -p switch to run in permiscuous mode, and can concatinate any number of properly written extention modules that the tool will load prior to running.
+The user must provide an interface (i.e. 'eth0'), can optionally provide the -p switch to run in permiscuous mode, and can concatenate any number of properly written extention modules that the tool will load prior to running.
 
 A execution example would be:
 ```bash
@@ -68,4 +68,4 @@ class CmdExtension(object):
 
 ```
 
-No external dependencies.
+#### No external dependencies.
