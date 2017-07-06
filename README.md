@@ -2,7 +2,7 @@
 
 This project is a simple terminal IP traffic monitoring tool with simple a user interface and extensibility.
 
-To run Linux (must be root):
+To run in Linux (must be root):
 
 ```bash
 $ sudo ./ip_monitor -i interface [-p] [Extention, ...]
