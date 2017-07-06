@@ -19,8 +19,8 @@ $ sudo ./ip_monitor -i eth0 -p ip_time ip_whois ip_throttle
 Strike 'arrow-up' and 'arrow-down' to scroll through connections. Strike 'r' to remove a connection from the state.
 
 
-##Extentions
-###Model
+##Extentions  
+###Model  
 
 Extending the tool is easy.  Write a module that that globally defines an Extension object named 'extension', defined in ip_extension.py. Load the modules by concatenating them only the executing command.
 
