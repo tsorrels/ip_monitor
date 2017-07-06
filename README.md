@@ -42,7 +42,7 @@ data_extensions = [ 'average_bps', ]
 
 ```
 
-
+### View
 
 The view is a series of columns with a defined string header and a matching field in the connection objects that the view will access when writing the display.
 
@@ -55,7 +55,7 @@ class HeaderItem(object):
         self.offset = offset	# not used
 
 ```
-
+### Controller
 
 The control can be extended by adding CmdExtension objects, defined in cmd_extension.py. The CmdExtension object simply defines an input key and a function to execute when pressed.  The programmer must take care to not allow a collision between input keys; each key may be mapped only once throughout the entire program.
 
@@ -68,4 +68,4 @@ class CmdExtension(object):
 
 ```
 
-No external dependenc
+No external dependencies.
