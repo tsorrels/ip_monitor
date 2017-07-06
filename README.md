@@ -4,7 +4,7 @@ This project is a simple terminal IP traffic monitoring tool with simple user in
 
 To run Linux (must be root):
 
-'''bash
+'''bash  
 $ sudo ./ip_monitor -i interface [-p] [Extention, ...]
 
 '''
