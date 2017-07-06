@@ -1,7 +1,7 @@
 # IP_monitor
-
+'''
 This project is a simple terminal IP traffic monitoring tool with simple user interface and extensibility.
-
+'''
 To run Linux (must be root):
 
 '''
