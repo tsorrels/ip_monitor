@@ -12,7 +12,7 @@ The user must provide an interface (i.e. 'eth0'), can optionally provide the -p 
 
 A execution example would be:
 '''bash
-$ sudo ./ip_monitor -i eth0 -p ip_time ip_whois ip_throttle
+$ sudo ./ip\_monitor -i eth0 -p ip\_time ip\_whois ip\_throttle
 '''
 
 
