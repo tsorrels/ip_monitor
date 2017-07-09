@@ -1,4 +1,3 @@
-import socket
 import time
 from cmd_extension import CmdExtension
 from display_headers import HeaderItem
