@@ -80,14 +80,13 @@ The function to execute in a command extension must have the following prototype
 ```python
 function_def(data, state)
 ```
-where 'data' is a string that is the characters from the row in the view corrosponding to the current connection.  You can pass the data string to the 'find_connection' method in the state object to retreive a reference to the connection identified in the view as the 'current connection.'
+where 'data' is a string of characters from the row in the view representing the 'current connection.'  You can pass the data string to the 'find_connection' method in the state object to retreive a reference to the connection identified in the view.
 
 ```python
 execute_command(data, state):
     connection = state.find_connection(data)
     with state.all_lock:
         # operate on connection
-    
 ```
 
 ### Locking
@@ -135,7 +134,6 @@ def refresh_time(data, state):
 def run_time(state):
     connections = state.all_connections
     lock = state.all_lock
-    
     now = time.time()
     with lock:
         for connection in connections:
@@ -157,10 +155,17 @@ extension = Extension(Threads, Header_Extensions, Data_Extensions, Cmd_Extension
 ```
 
 ### Logging mechanism
-
+TODO: describe logging mechanism
 
 ### Future ideas for extensions
 Man in the Middle Module
 Counter traffic module
 Module to send SIGKILL to processes from this tool
 Whitelist module, where only filtered traffic
+
+
+
+#### TODO
+- refactor file structure
+- accept .py extension names
+- gracefully exit if not root or if no interface 
