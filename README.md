@@ -138,7 +138,7 @@ Data_Extensions = [ 'time_elapsed', ]
 Cmd_Extensions = [ CmdExtension('R', refresh_time),]
 
 extension = Extension(Threads, Header_Extensions, Data_Extensions, Cmd_Extensions)```
-
+```
 ### Locking
 
 ### Logging mechanism
