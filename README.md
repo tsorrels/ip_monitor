@@ -17,12 +17,6 @@ $ sudo ./ip_monitor -i eth0 -p ip_time ip_whois ip_throttle
 
 
 
-![GitHub Logo](/terminal_view.jpeg)
-Format: ![Alt Text](url)
-
-
-
-
 Strike 'arrow-up' and 'arrow-down' to scroll through connections. Strike 'r' to remove a connection from the state.  
 
 
@@ -62,6 +56,14 @@ class HeaderItem(object):
         self.offset = offset	# not used
 
 ```
+
+![UI View](/terminal_view.jpeg)
+
+The UI identifies the 'current' connection with underline. Strike the up or down key to scroll and select a differrent connection. Commands executed will operate on the current connection. 
+
+Connections that have not experienced data transfer in the last 10 seconds are displayed in grey text. 
+
+
 ### Controller
 
 The control can be extended by adding CmdExtension objects, defined in cmd_extension.py. The CmdExtension object simply defines an input key and a function to execute when pressed.  The programmer must take care to not allow a collision between input keys; each key may be mapped only once throughout the entire program.
