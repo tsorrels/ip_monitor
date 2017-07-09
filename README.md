@@ -16,7 +16,6 @@ $ sudo ./ip_monitor -i eth0 -p ip_time ip_whois ip_throttle
 ```
 
 
-
 Strike 'arrow-up' and 'arrow-down' to scroll through connections. Strike 'r' to remove a connection from the state.  
 
 
@@ -77,6 +76,7 @@ class CmdExtension(object):
 
 ```
 
+The function must have signature
 
 ### Current extensions
 ip_time
@@ -111,7 +111,7 @@ def format_time(time):
 
 def run_time(state):
     connections = state.all_connections
-    lock = state.all_lock    
+    lock = state.all_lock
     now = time.time()
     with lock:
         for connection in connections:
@@ -125,14 +125,13 @@ def Run(state):
     
 
 Threads = [Run,]
-
 Header_Extensions = [ HeaderItem('Time', 4), ]
-
 Data_Extensions = [ 'time_elapsed', ]
-        
+
 extension = Extension(Threads, Header_Extensions, Data_Extensions, [])
 ```
 
+### Locking
 
 ### Logging mechanism
 
@@ -141,4 +140,4 @@ extension = Extension(Threads, Header_Extensions, Data_Extensions, [])
 Man in the Middle Module
 Counter traffic module
 Module to send SIGKILL to processes from this tool
-Whitelist module, where only filtered traffic 
+Whitelist module, where only filtered traffic
