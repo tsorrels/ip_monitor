@@ -1,4 +1,3 @@
-
 import socket
 import time
 from display_headers import HeaderItem
@@ -17,8 +16,8 @@ def format_time(time):
             
     return returnString
 
+
 def run_time(state):
-    #(connections, lock) = state.connections_map[protocol]
     connections = state.all_connections
     lock = state.all_lock
     
@@ -28,13 +27,9 @@ def run_time(state):
             connection.time_elapsed = format_time(now - connection.time_last)
     
     
-
 def Run(state):
     while True:
         run_time(state)
-        #run_time(socket.IPPROTO_UDP, state)
-        #run_time(socket.IPPROTO_TCP, state)
-        #run_time(socket.IPPROTO_ICMP, state)
         time.sleep(1)
     
 
