@@ -16,7 +16,7 @@ $ sudo ./ip_monitor -i eth0 -p ip_time ip_whois ip_throttle
 ```
 
 
-Strike 'arrow-up' and 'arrow-down' to scroll through connections. Strike 'r' to remove a connection from the state.  
+Strike 'arrow-up' and 'arrow-down' to scroll through connections. Strike 'r' to remove a connection from the state.  Stirke 'q' to quit.
 
 
 ## Extentions
@@ -76,7 +76,22 @@ class CmdExtension(object):
 
 ```
 
-The function must have signature
+The function to execute in a command extension must have the following prototype:
+```python
+function_def(data, state)
+```
+where 'data' is a string of characters from the row in the view representing the 'current connection.'  You can pass the data string to the 'find_connection' method in the state object to retreive a reference to the connection identified in the view.
+
+```python
+execute_command(data, state):
+    connection = state.find_connection(data)
+    with state.all_lock:
+        # operate on connection
+```
+
+### Locking
+
+This project acheives extensibility by adding threads of execution that do work on a globally shared state.  It is important to ensure a thread acquires the state.all_lock lock before writing to the state or doing a time sensitive read.
 
 ### Current extensions
 ip_time
@@ -119,7 +134,6 @@ def refresh_time(data, state):
 def run_time(state):
     connections = state.all_connections
     lock = state.all_lock
-    
     now = time.time()
     with lock:
         for connection in connections:
@@ -139,13 +153,19 @@ Cmd_Extensions = [ CmdExtension('R', refresh_time),]
 
 extension = Extension(Threads, Header_Extensions, Data_Extensions, Cmd_Extensions)```
 ```
-### Locking
 
 ### Logging mechanism
-
+TODO: describe logging mechanism
 
 ### Future ideas for extensions
 Man in the Middle Module
 Counter traffic module
 Module to send SIGKILL to processes from this tool
 Whitelist module, where only filtered traffic
+
+
+
+#### TODO
+- refactor file structure
+- accept .py extension names
+- gracefully exit if not root or if no interface 
