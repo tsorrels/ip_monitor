@@ -16,6 +16,13 @@ $ sudo ./ip_monitor -i eth0 -p ip_time ip_whois ip_throttle
 ```
 
 
+
+![GitHub Logo](/terminal_view.jpeg)
+Format: ![Alt Text](url)
+
+
+
+
 Strike 'arrow-up' and 'arrow-down' to scroll through connections. Strike 'r' to remove a connection from the state.  
 
 
