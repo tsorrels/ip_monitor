@@ -13,6 +13,7 @@ class Controller(object):
     def __populate_core_operations(self):
 
         self.__operations[ord('r')] = self.__remove
+        self.__operations[ord('q')] = self.__quit
         self.__operations[ord('p')] = self.__toggle_pause
         self.__operations[curses.KEY_UP] = self.__move_up
         self.__operations[curses.KEY_DOWN] = self.__move_down
@@ -82,6 +83,13 @@ class Controller(object):
         
     def __toggle_pause(self, data, state):
         pass
+
+
+    def __quit(self, data, state):
+        # TODO: call quit/cleanup for all modules
+        curses.endwin()
+        exit(0)
+        
 
     def __remove(self, data, state):
         # check edge case
