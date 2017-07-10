@@ -10,6 +10,7 @@ import socket
 import time
 import curses
 import getopt
+import argparse
 import sys
 from ip_connection import IPConnection
 from ip_header import IP
@@ -21,8 +22,7 @@ from ip_display import Display
 from ip_controller import Controller
 from ip_ethheader import EthHeader
 
-display = Display()
-        
+#display = Display()        
 
 def sniff(state):
 
@@ -32,9 +32,6 @@ def sniff(state):
     sniffer = socket.socket(socket.AF_PACKET, socket.SOCK_RAW,
                             socket.ntohs(0x0003))
     sniffer.bind((state.interface, 0))
-    #sniffer.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)
-    #if os.name == "nt":
-    #    sniffer.ioctl(socket.SIO_RCVALL, socket.RCVALL_ON)
 
     try:        
         while True:
@@ -52,7 +49,6 @@ def sniff(state):
             if not state.permiscuous:
                 if not (ip_header.src_address == state.host_address or \
                         ip_header.dst_address == state.host_address):
-                    #state.logwriter.write('error', state.host_address)
                     continue
 
             newConnection = True
@@ -80,7 +76,6 @@ def sniff(state):
     except Exception as e:
         state.logwriter.write('error', str(e) + '\n')
         exit(0)
-        #traceback.print_exc(limit=None, file=file_handle)
 
 
 def SIGINT_handler(signal, frame):
@@ -88,15 +83,22 @@ def SIGINT_handler(signal, frame):
     exit(0)            
 
 def SIGWINCH_handler(signal, frame):
-    #pass
-    display.update_window()
+    pass
+    #display.update_window()
     
     
 def main():
     
-    (optlist, args) = getopt.getopt(sys.argv[1:], 'pi:')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--interface', required = True)
+    parser.add_argument('-p')
+    parser.add_argument('args', nargs=argparse.REMAINDER)
+    
+    namespace = parser.parse_args()
 
-    state = GlobalState(optlist, args)
+    display = Display()
+    
+    state = GlobalState(namespace)
     display.state = state
 
     controller = Controller(display, state)
