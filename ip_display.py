@@ -16,17 +16,16 @@ from display_headers import *
 from display_item import *
 from logwriter import LogWriter
 
-screen = curses.initscr()
+
 
 class Display(object):
     def __init__(self):
-
         self.num_header_rows = 1 # TODO: replace this magic number
         self.cur_row = 1
         self.cur_index = 0
         self.win_start_index = 0
         self.num_output_rows = 0
-        self.stdscr = screen
+        self.stdscr = curses.initscr()
         self.stdscr.keypad(1)
         self.stdscr.nodelay(1)
         self.scr_dimensions = self.stdscr.getmaxyx() # returns (height, width)
@@ -144,9 +143,9 @@ class Display(object):
     def update_window(self):
         #self.stdscr = curses.initscr()
         #self.stdscr.keypad(1)
-        #(y, x) = screen.getmaxyx()
+        #(y, x) = self.stdscr.getmaxyx()
         self.scr_dimmensions = self.stdscr.getmaxyx() # returns (height, width)
-        screen.refresh()
+        self.stdscr.refresh()
         #self.scr_dimmesions = self.stdscr.getmaxyx()
         #self.display()
         #self.state.logwriter.write('error', str(self.scr_dimmesions))

@@ -1,4 +1,3 @@
-
 import importlib
 import traceback
 import signal
@@ -22,7 +21,7 @@ import struct
 
 
 class GlobalState(object):
-    def __init__(self, optlist, mods):
+    def __init__(self, namespace):
 
         self.logwriter = LogWriter()
         self.logwriter.add_log('error', './error_log.txt')        
@@ -51,16 +50,18 @@ class GlobalState(object):
         self.permiscuous = False
         self.interface = None
         
-        # parse options
-        for o, a in optlist:
-            if o == '-p':
-                self.permiscuous = True
+        args_dictionary = vars(namespace)
 
-            elif o in ('-i', '--interface'):
-                self.interface = a
-                                
+        self.logwriter.write('error', str(args_dictionary))
+        
+        self.interface = args_dictionary['interface']
+        
+        if 'p' in args_dictionary:
+            self.permiscuous = True
+        
+                
         # load modules
-        for mod in mods:
+        for mod in args_dictionary['args']:
             self.__load_mod(mod)
 
         self.host_address = self.__get_ip_address(self.interface)
