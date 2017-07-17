@@ -9,15 +9,14 @@ import time
 import curses
 import getopt
 import sys
+import socket
+import fcntl
+import struct
 from ip_connection import IPConnection
 from ip_header import IP
 from display_headers import *
 from display_item import *
 from logwriter import LogWriter
-
-import socket
-import fcntl
-import struct
 
 
 class GlobalState(object):
@@ -51,15 +50,12 @@ class GlobalState(object):
         self.interface = None
         
         args_dictionary = vars(namespace)
-
-        self.logwriter.write('error', str(args_dictionary))
         
         self.interface = args_dictionary['interface']
         
         if 'p' in args_dictionary:
             self.permiscuous = True
-        
-                
+                        
         # load modules
         for mod in args_dictionary['args']:
             self.__load_mod(mod)
@@ -70,6 +66,10 @@ class GlobalState(object):
 
     def __load_mod(self, mod):
         try:
+
+            if len(mod) > 3 and mod[-3:] == '.py':
+                mod = mod[0:-3]
+            
             importlib.import_module(mod)
             extension = sys.modules[str(mod)].extension
 
@@ -79,7 +79,6 @@ class GlobalState(object):
             
             #add headers
             for header in extension.header_extensions:
-                #self.header_extensions.append(header)
                 self.display_headers.append(header)
                 
             #add connection data
@@ -89,15 +88,13 @@ class GlobalState(object):
             #add execution threads             
             for runnable in extension.threads:
                 self.run_threads.append(runnable)
-        
-            
+                    
         except KeyError as e:
             self.logwriter.write('error', "Key error")
             
         
         except Exception as e:
             self.logwriter.write('error', 'Other exception, ' + mod + str(e))
-
 
     # taken from
     # https://stackoverflow.com/questions/24196932/
@@ -111,7 +108,6 @@ class GlobalState(object):
         )[20:24])
 
 
-
     def __parse_line(self, line):
         words = line.split()
         ip_src = words[0]
@@ -122,7 +118,6 @@ class GlobalState(object):
         return (ip_src, ip_dst)
         
         
-
     def find_connection(self, data):
         (ip_src, ip_dst) = self.__parse_line(data)
         with self.all_lock:            

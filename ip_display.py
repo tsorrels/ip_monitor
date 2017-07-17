@@ -112,7 +112,6 @@ class Display(object):
                                self.scr_dimensions[0] - \
                                self.num_header_rows)):
             connection = self.state.all_connections[index]
-            self.state.logwriter.write('error', str((y, self.scr_dimensions[0])))
             self.__write_line(y, connection, now)
             y += 1
             
