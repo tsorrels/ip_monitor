@@ -73,9 +73,20 @@ class Display(object):
 
             if getattr(connection, connection.attr_names[index]) and \
                (x + self.state.display_headers[index].length)< self.scr_dimensions[1]:
-                self.stdscr.addnstr(y, x,
-                    str(getattr(connection, connection.attr_names[index])),
-                    self.state.display_headers[index].length, attr)
+
+                # get string to wite
+                string = str(getattr(connection, connection.attr_names[index]))
+                if string[-1] == '\n':
+                    #TODO: remove ALL appended new line characters
+                    string = string[:-1]
+                self.stdscr.addnstr(
+                    y,
+                    x,
+                    #str(getattr(connection, connection.attr_names[index])),
+                    string,
+                    self.state.display_headers[index].length,
+                    attr)
+                    
             x = x + self.state.display_headers[index].length + 2
 
         
@@ -101,6 +112,7 @@ class Display(object):
                                self.scr_dimensions[0] - \
                                self.num_header_rows)):
             connection = self.state.all_connections[index]
+            self.state.logwriter.write('error', str((y, self.scr_dimensions[0])))
             self.__write_line(y, connection, now)
             y += 1
             
