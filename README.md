@@ -94,15 +94,15 @@ execute_command(data, state):
 This project acheives extensibility by adding threads of execution that do work on a globally shared state.  It is important to ensure a thread acquires the state.all_lock lock before writing to the state or doing a time sensitive read.
 
 ### Current extensions
-ip_time
+ip_time - very module that extends the model by adding the 'time_elapsed' attribute to connection objects, extends the view by adding the Time column to the UI showing the time elapsed since the last data transfer for a connection, and the controller by adding funcionality mapped to the 'R' key that 'resets' the time elapsed data for a connection to 0.  
 
-ip_whois
+ip_whois - extension that runs a whois client to resolve source IPs for all new inbound connections.
 
-ip_throttle
+ip_throttle - extension that uses the Linux tc utility to throttle down all incoming traffic from new connections.  Extends the controller with the 't' key to toggle throttling a connection (Linux only).
 
 ### Extension Example Definition
 
-A very simple example of an extension follows.  This module extends the model and the view, but does not extend the controller.  Notice the final line which defines the global variable 'extension'.
+A very simple example of an extension follows.  Notice the final line which defines the global variable 'extension'.
 
 ```python
 import time
@@ -167,5 +167,5 @@ Whitelist module, where only filtered traffic
 
 #### TODO
 - refactor file structure
-- accept .py extension names
-- gracefully exit if not root or if no interface 
+- gracefully exit if not root
+- support module cleanup
