@@ -62,6 +62,8 @@ The UI identifies the 'current' connection with underline. Strike the up or down
 
 Connections that have not experienced data transfer in the last 10 seconds are displayed in grey text. 
 
+Ensure the terminal window is sufficiently wide to display all appended header displays.
+TODO: handle dynamic terminal resizing
 
 ### Controller
 
