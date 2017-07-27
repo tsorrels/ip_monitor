@@ -12,7 +12,7 @@ The user must provide an interface (i.e. 'eth0'), can optionally provide the -p 
 
 A execution example would be:
 ```bash
-$ sudo ./ip_monitor -i eth0 -p ip_time ip_whois ip_throttle
+$ sudo ./ip_monitor -i eth0 -p ip_whois ip_time
 ```
 
 
@@ -96,11 +96,11 @@ execute_command(data, state):
 This project acheives extensibility by adding threads of execution that do work on a globally shared state.  It is important to ensure a thread acquires the state.all_lock lock before writing to the state or doing a time sensitive read.
 
 ### Current extensions
-ip_time - very module that extends the model by adding the 'time_elapsed' attribute to connection objects, extends the view by adding the Time column to the UI showing the time elapsed since the last data transfer for a connection, and the controller by adding funcionality mapped to the 'R' key that 'resets' the time elapsed data for a connection to 0.  
+**ip_time** - very module that extends the model by adding the 'time_elapsed' attribute to connection objects, extends the view by adding the Time column to the UI showing the time elapsed since the last data transfer for a connection, and the controller by adding funcionality mapped to the 'R' key that 'resets' the time elapsed data for a connection to 0.  
 
-ip_whois - extension that runs a whois client to resolve source IPs for all new inbound connections.
+**ip_whois** - extension that runs a whois client to resolve source IPs for all new inbound connections.
 
-ip_throttle - extension that uses the Linux tc utility to throttle down all incoming traffic from new connections.  Extends the controller with the 't' key to toggle throttling a connection (Linux only).
+**ip_throttle** - extension that uses the Linux tc utility to throttle down all incoming traffic from new connections.  Extends the controller with the 't' key to toggle throttling a connection (Linux only).
 
 ### Extension Example Definition
 
