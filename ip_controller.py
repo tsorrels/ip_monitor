@@ -87,6 +87,8 @@ class Controller(object):
 
     def __quit(self, data, state):
         # TODO: call quit/cleanup for all modules
+        for function in state.exit_functions:
+            function(self.state)
         curses.endwin()
         exit(0)
         
