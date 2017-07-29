@@ -91,9 +91,36 @@ execute_command(data, state):
         # operate on connection
 ```
 
-### Locking
+### Threads
 
-This project acheives extensibility by adding threads of execution that do work on a globally shared state.  It is important to ensure a thread acquires the state.all_lock lock before writing to the state or doing a time sensitive read.
+Each extension also includes a member 'threads' which is a list of function definitions with the signature 
+```python
+function_def(state)
+```
+The function will likely include an infinite loop so as to continue doing work on the state (like throttling all new in-bound connections). The tool will create a new thread that calls this function and passes in the global state object.  **Locking - ** It is important to ensure your thread(s) acquire the state.all_lock lock before writing to the state or doing a time sensitive read. A simply example from the ip_time extension module follows:
+
+```python    
+def Run(state):
+    while True:
+        run_time(state)
+        time.sleep(1)
+
+
+def run_time(state):
+    connections = state.all_connections
+    lock = state.all_lock
+    
+    now = time.time()
+    with lock:
+        for connection in connections:
+            connection.time_elapsed = format_time(now - connection.time_last)
+```
+
+
+### Cleanup on exit
+
+In additional to defening a globally scoped Extension object named 'extension', modules may optionally define a globally scoped function named 'exit'.  The function signature must accept one parameter, the global state.  Upon loading the module, tool will register this cleanup function and call it prior to exiting.
+
 
 ### Current extensions
 **ip_time** - very module that extends the model by adding the 'time_elapsed' attribute to connection objects, extends the view by adding the Time column to the UI showing the time elapsed since the last data transfer for a connection, and the controller by adding funcionality mapped to the 'R' key that 'resets' the time elapsed data for a connection to 0.  
@@ -157,7 +184,9 @@ extension = Extension(Threads, Header_Extensions, Data_Extensions, Cmd_Extension
 ```
 
 ### Logging mechanism
-TODO: describe logging mechanism
+Debugging multithreaded applications that use the curses library is difficult.  The global state includes a member named 'logwriter' which any module can use to write any log the programmer wishes.  A module may optionally register a new log with the logwriter prior to using the logwriter.write(log_handle, text) function.  An example from ip_whois follows:
+TODO: paste example
+
 
 ### Future ideas for extensions
 Man in the Middle Module
