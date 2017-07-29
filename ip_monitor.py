@@ -80,6 +80,7 @@ def sniff(state):
 
 def SIGINT_handler(signal, frame):
     curses.endwin()
+    print('\n\tKilled! To properly terminate, next time strike \'q\'\n')
     exit(0)            
 
 def SIGWINCH_handler(signal, frame):

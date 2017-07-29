@@ -43,6 +43,8 @@ class GlobalState(object):
         self.header_extensions = []
         self.data_extensions = []
         self.run_threads = []
+
+        self.exit_functions = []
         
         self.display_headers = default_headers
 
@@ -88,7 +90,10 @@ class GlobalState(object):
             #add execution threads             
             for runnable in extension.threads:
                 self.run_threads.append(runnable)
-                    
+
+            #add exit function
+            self.exit_functions.append(sys.modules[str(mod)].exit)
+                
         except KeyError as e:
             self.logwriter.write('error', "Key error")
             

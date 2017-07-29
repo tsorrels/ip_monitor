@@ -32,7 +32,9 @@ def run_time(state):
     with lock:
         for connection in connections:
             connection.time_elapsed = format_time(now - connection.time_last)
-    
+
+def exit():
+    pass
     
 def Run(state):
     while True:

@@ -2,7 +2,7 @@ import time
 import subprocess
 from display_headers import HeaderItem
 from ip_extension import Extension
-from ip_command import IPCommand
+from cmd_extension import CmdExtension
 
 STATUS_NONE = None
 STATUS_THROTTLED = "Throttled"
@@ -97,11 +97,15 @@ def toggle_throttled(data, state):
         else:
             # error
             pass
-        
 
+def exit(state):
+    # remove ingress qdisc
+    subprocess.call(DEL_QDISC_STRING.format(state.interface), shell=True)
+        
+        
 Threads = [Run, ]
 Header_Extensions = [HeaderItem('Throttle', 10)]
 Data_Extensions = [ 'throttle_status', ]
-Cmd_Extensions = [ IPCommand('t', toggle_throttled), ]
+Cmd_Extensions = [ CmdExtension('t', toggle_throttled), ]
 
 extension = Extension(Threads, Header_Extensions, Data_Extensions, Cmd_Extensions)
