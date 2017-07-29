@@ -14,9 +14,8 @@ class WHOISClient(object):
     def __init__(self, connectionTuples, state):
         self.connectionTuples = connectionTuples
         self.etcHosts = self.__readEtcHosts()
-        self.logfile = open('./whoislog.txt', 'a')
         self.state = state
-        
+        self.state.logwriter.add_log('whois', 'whoislog.txt')
 
     def __isIpv4(self, string):
         return True
@@ -56,7 +55,7 @@ class WHOISClient(object):
         
         
     def run(self):
-        self.logfile.write('running\n')
+        self.state.logwriter.write('whois', 'running\n')
 
         while True:
             try:
@@ -64,10 +63,7 @@ class WHOISClient(object):
                 time.sleep(2)
                 # find connection with no resolution
                 for connectionTuple in self.connectionTuples:
-                    self.logfile.write('searching connection tuple\n')
                     for connection in connectionTuple[0]:
-                        self.logfile.write('found connection, whois =\n' +
-                                           str(connection.src_whois))
                         if not connection.src_whois:
                             whois = self.__getWhois(connection.src_address)
                             if whois:
@@ -77,7 +73,7 @@ class WHOISClient(object):
                                     with connectionTuple[1]:
                                         connection.src_whois = whois
             except Exception, e:
-                self.logfile.write(str(e) + '\n')
+                self.state.logwriter.write('whois', str(e) + '\n')
                     
 
     def __checkEtcHosts(self, address):
@@ -100,13 +96,11 @@ class WHOISClient(object):
                         pass
                     words = line.split(None, 1)
                     if words[0] == 'Organization:':
-                        self.logfile.write(words[1])
-                        self.logfile.flush()
+                        self.state.logwriter.write('whois', words[1] + '\n')
 
                         return words[1]
         except Exception, e:
-            self.logfile.write(str(e) + '\n')
-            self.logfile.flush()
+            self.state.logwriter.write('whois', str(e) + '\n')
         return None
 
     
@@ -129,31 +123,15 @@ class WHOISClient(object):
         recv_len = 1
         try:
             while recv_len:
-                self.logfile.write('about to receive \n')
-                self.logfile.flush()
 
-                #data = s.recv(MAXRESPONSESIZE)
-                data = s.recv(4096)
-                
-                self.logfile.write('receive returned\n')
-                self.logfile.flush()
-                
+                data = s.recv(MAXRESPONSESIZE)                                
                 recv_len = len(data)
                 response += data
                 if len(response) > 4096:
                     break
 
         except Exception, e:
-            self.logfile.write(str(e) + '\n')
-            self.logfile.flush()
-            
-            
-
-        #self.logfile.write(response + '\n')
-        self.logfile.write("Finished calling whois\n")
-        self.logfile.flush()
-        #self.logfile.close()
-        
+            self.state.logwriter.write('whois', str(e) + '\n')                                            
         return self.__parseWhois(response)
 
 
