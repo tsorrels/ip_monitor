@@ -199,4 +199,5 @@ Whitelist module, where only filtered traffic
 #### TODO
 - refactor file structure
 - gracefully exit if not root
-- support module cleanup
+- add details view
+- build module validator
