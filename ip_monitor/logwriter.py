@@ -1,5 +1,7 @@
 import threading
 
+relative_path = './logs/'
+
 class LogWriter(object):
     def __init__(self):
         self.handles = {}
@@ -7,7 +9,7 @@ class LogWriter(object):
         
     def add_log(self, alias, filename):
         with self.lock:
-            handle = open(filename, 'a')
+            handle = open(relative_path + filename, 'a')
             logHandle = LogHandle(alias, handle)
             self.handles[alias] = logHandle
 

@@ -56,7 +56,7 @@ class HeaderItem(object):
 
 ```
 
-![UI View](/terminal_view.jpeg)
+![UI View](/doc/terminal_view.jpeg)
 
 The UI identifies the 'current' connection with underline. Strike the up or down key to scroll and select a differrent connection. Commands executed will operate on the current connection. 
 
