@@ -1,8 +1,8 @@
 
 import socket
 import time
-from display_headers import HeaderItem
-from ip_extension import Extension
+from ip_monitor.display_headers import HeaderItem
+from ip_monitor.ip_extension import Extension
 
 MAXRESPONSESIZE = 8192
 

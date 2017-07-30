@@ -1,5 +1,5 @@
 
 clean:
-	rm *.pyc
-	rm *.txt
-	rm *~
+	rm ./ip_monitor/*.pyc
+	rm ./logs/*
+	rm ./ip_monitor/*~

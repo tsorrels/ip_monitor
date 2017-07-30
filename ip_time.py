@@ -1,7 +1,7 @@
 import time
-from cmd_extension import CmdExtension
-from display_headers import HeaderItem
-from ip_extension import Extension
+from ip_monitor.cmd_extension import CmdExtension
+from ip_monitor.display_headers import HeaderItem
+from ip_monitor.ip_extension import Extension
 
 def format_time(time):
     returnString = ''
@@ -33,7 +33,7 @@ def run_time(state):
         for connection in connections:
             connection.time_elapsed = format_time(now - connection.time_last)
 
-def exit():
+def exit(state):
     pass
     
 def Run(state):

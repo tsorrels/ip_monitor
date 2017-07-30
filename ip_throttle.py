@@ -1,8 +1,8 @@
 import time
 import subprocess
-from display_headers import HeaderItem
-from ip_extension import Extension
-from cmd_extension import CmdExtension
+from ip_monitor.display_headers import HeaderItem
+from ip_monitor.ip_extension import Extension
+from ip_monitor.cmd_extension import CmdExtension
 
 STATUS_NONE = None
 STATUS_THROTTLED = "Throttled"
