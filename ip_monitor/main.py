@@ -82,8 +82,8 @@ def SIGINT_handler(signal, frame):
     print('\n\tKilled! To properly terminate, next time strike \'q\'\n')
     exit(0)            
 
-def SIGWINCH_handler(signal, frame):
-    pass
+#def SIGWINCH_handler(signal, frame):
+    #pass
     #display.update_window()
     
     
@@ -107,7 +107,7 @@ def main():
     
     signal.signal(signal.SIGINT, SIGINT_handler)
 
-    signal.signal(signal.SIGWINCH, SIGWINCH_handler)
+    #signal.signal(signal.SIGWINCH, SIGWINCH_handler)
     
     # TODO: support Windows
     #if os.name == "nt":
@@ -147,5 +147,5 @@ def main():
 
     # run UI on this thread
     while True:
-        time.sleep(.1)
+        #time.sleep(.1)
         display.run()
