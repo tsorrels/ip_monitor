@@ -138,27 +138,16 @@ class Display(object):
 
 
     def run(self):
-        while True:
-            ch = self.stdscr.getch()
-            if ch != -1:
-                cur_line = self.stdscr.instr(self.cur_row, 0)
-                self.controller.do_operation(ch, cur_line)
-            #self.state.logwriter.write('error', str(ch))
-            if ch == curses.KEY_RESIZE:
-                self.update_window()
+        ch = self.stdscr.getch()
+        if ch != -1 and ch != curses.KEY_RESIZE:
+            cur_line = self.stdscr.instr(self.cur_row, 0)
+            self.controller.do_operation(ch, cur_line)
+        if ch == curses.KEY_RESIZE:
+            self.update_window()
 
-            #else:
-            #time.sleep(.5)
-            self.display()
+        self.display()
                 
     def update_window(self):
-        #self.stdscr = curses.initscr()
-        #self.stdscr.keypad(1)
-        #(y, x) = self.stdscr.getmaxyx()
-        self.scr_dimmensions = self.stdscr.getmaxyx() # returns (height, width)
+        self.scr_dimensions = self.stdscr.getmaxyx() # returns (height, width)
         self.stdscr.refresh()
-        #self.scr_dimmesions = self.stdscr.getmaxyx()
-        #self.display()
-        #self.state.logwriter.write('error', str(self.scr_dimmesions))
-        #self.state.logwriter.write('error', str(self.stdscr.getmaxyx()) + '\n')
-        #self.state.logwriter.write('error', str(y) +','+str(x) + '\n')
+        self.state.logwriter.write('error', str(self.scr_dimensions))
