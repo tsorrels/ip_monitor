@@ -199,7 +199,7 @@ Whitelist module, where only filtered traffic
 
 
 #### TODO
-- refactor file structure
+- parse ARP packets
 - gracefully exit if not root
 - add details view
 - build module validator

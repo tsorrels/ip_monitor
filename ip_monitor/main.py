@@ -19,7 +19,7 @@ from ip_monitor.logwriter import LogWriter
 from ip_monitor.ip_state import GlobalState
 from ip_monitor.ip_display import Display
 from ip_monitor.ip_controller import Controller
-from ip_monitor.ip_ethheader import EthHeader
+#from ip_monitor.ip_ethheader import EthHeader
 
 
 
@@ -32,17 +32,20 @@ def sniff(state):
                             socket.ntohs(0x0003))
     sniffer.bind((state.interface, 0))
 
+    link_layer_parser = state.link_layer_parser
+    
     try:        
         while True:
 
             raw_buffer = sniffer.recvfrom(65565)[0]
-            eth_header = EthHeader(raw_buffer[0:14])
+            link_layer_header = link_layer_parser.parse_header(raw_buffer)
+            #eth_header = EthHeader(raw_buffer[0:14])
             if len(raw_buffer) < 34 :
                 # there is no ip header in this packet
                 state.logwriter.write('error', 'processed non-ip packet\n')
                 continue
             
-            ip_header = IP(raw_buffer[14:34])
+            ip_header = IP(raw_buffer[link_layer_header.length:34])
 
             #check if in permiscuous mode
             if not state.permiscuous:
@@ -67,7 +70,7 @@ def sniff(state):
             # append is thread safe
             # this is the only thread writing to this list
                 connections.append(IPConnection(ip_header,
-                                                eth_header,
+                                                link_layer_header,
                                                 new_time,
                                                 state.data_extensions))
                 
@@ -92,6 +95,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--interface', required = True)
     parser.add_argument('-p')
+    parser.add_argument('-m', action = 'store_true')
     parser.add_argument('args', nargs=argparse.REMAINDER)
     
     namespace = parser.parse_args()
@@ -146,6 +150,7 @@ def main():
         thread.start()
 
     # run UI on this thread
+    #time.sleep(15)
     while True:
         time.sleep(.1)
         display.run()

@@ -2,6 +2,7 @@ import socket
 import struct
 from ctypes import *
 
+header_size = 14
 
 class EthHeader(Structure):
     _fields_ = [
@@ -15,6 +16,8 @@ class EthHeader(Structure):
         return self.from_buffer_copy(socket_buffer)
      
     def __init__(self, socket_buffer = None):
+        self.length = header_size
+        
         self.src = format(self.ether_shost[0],'02x') + ':' + \
                    format(self.ether_shost[1],'02x') + ':' + \
                    format(self.ether_shost[2],'02x') + ':' + \
