@@ -17,6 +17,7 @@ from ip_header import IP
 from display_headers import *
 from display_item import *
 from logwriter import LogWriter
+from eth_parser import EthParser
 
 
 class GlobalState(object):
@@ -49,20 +50,32 @@ class GlobalState(object):
         self.display_headers = default_headers
 
         self.permiscuous = False
+        self.monitor = False
         self.interface = None
-        
-        args_dictionary = vars(namespace)
-        
-        self.interface = args_dictionary['interface']
-        
-        if 'p' in args_dictionary:
-            self.permiscuous = True
-                        
-        # load modules
-        for mod in args_dictionary['args']:
-            self.__load_mod(mod)
+        self.link_layer_parser = None
 
-        self.host_address = self.__get_ip_address(self.interface)
+        try:
+            args_dictionary = vars(namespace)
+
+            print args_dictionary
+            
+            self.interface = args_dictionary['interface']
+        
+            if 'p' in args_dictionary:
+                self.permiscuous = True
+                        
+            # load modules
+            for mod in args_dictionary['args']:
+                self.__load_mod(mod)
+
+            if args_dictionary['m']:
+                self.monitor = True
+            else:
+                self.host_address = self.__get_ip_address(self.interface)
+                self.link_layer_parser = EthParser(self)
+                
+        except Exception as e:
+            self.logwriter.write('error', 'Other exception, ' + mod + str(e))
             
             
 
@@ -133,4 +146,3 @@ class GlobalState(object):
 
         self.logwriter.write('error', 'did not find connection in controller: ' + data + connection.src_address + connection.dst_address + '\n')
         return #None
-    
