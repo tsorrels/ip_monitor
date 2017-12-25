@@ -5,8 +5,8 @@ class IPConnection(object):
         self.src = ipHeader.src
         self.dst = ipHeader.dst
         self.proto = ipHeader.protocol
-        self.eth_src = ethHeader.src
-        self.eth_dst = ethHeader.dst
+        #self.eth_src = ethHeader.src
+        #self.eth_dst = ethHeader.dst
         self.src_address = ipHeader.src_address
         self.dst_address = ipHeader.dst_address
         self.time_begin = time
