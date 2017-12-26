@@ -1,10 +1,11 @@
 
 
 class WifiHeader(object):
-    def __init__(self, rt_header, w_header):
+    def __init__(self, rt_header, w_header, llc_header):
         self.rt_header = rt_header
         self.w_header = w_header
-        self.length = rt_header.length + w_header.length
+        self.llc_header = llc_header
+        self.length = rt_header.length + w_header.length + llc_header.length
 
     
     def is_parsable(self):

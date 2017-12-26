@@ -11,9 +11,8 @@ class TestEthParser(unittest.TestCase):
 
     def test_ethernet_header_parsed(self):
         eth_parser = EthParser()
-
         
-        fd = open('./test/test_data/DNS_packet_hex_string.txt')
+        fd = open('./test/test_data/eth_frame_dns_hex_string.txt')
         hex_string = fd.read()
         hex_string = hex_string.strip() #remove whitespace from string
         hex_data = (str(hex_string)).decode('hex')
@@ -21,8 +20,6 @@ class TestEthParser(unittest.TestCase):
         expected_dst_mac = '00:00:ca:11:22:33'
         
         eth_header = eth_parser.parse_header(hex_data)
-        print eth_header.src
-        print eth_header.dst
 
         self.assertEqual(expected_src_mac, eth_header.src)
         self.assertEqual(expected_dst_mac, eth_header.dst)

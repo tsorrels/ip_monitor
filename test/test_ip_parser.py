@@ -1,6 +1,7 @@
 import unittest
 
 from ip_monitor.wifi_parser import WifiParser
+from ip_monitor.ip_header import IP
 
 class TestWifiParser(unittest.TestCase):
     def setup(self):
@@ -9,7 +10,7 @@ class TestWifiParser(unittest.TestCase):
     def test_1(self):
 	self.assertTrue(True)
 
-    def test_wifi_header_parsed(self):
+    def test_wifi_frame_ip_header_parsed(self):
         wifi_parser = WifiParser()
         
         fd = open('./test/test_data/wifi_frame_tcp_hex_string.txt')
@@ -21,7 +22,10 @@ class TestWifiParser(unittest.TestCase):
 
         wifi_header = wifi_parser.parse_header(hex_data)
 
-        print wifi_header.w_header.addr1
-        print wifi_header.w_header.addr2
-        print wifi_header.w_header.addr3
-        print wifi_header.w_header.addr4
+        ip_header = IP(hex_data[wifi_header.length:])
+
+        src_ip = '10.238.192.58'
+        dst_ip = '93.184.215.92'
+
+        self.assertEqual(src_ip, ip_header.src_address)
+        self.assertEqual(dst_ip, ip_header.dst_address)
