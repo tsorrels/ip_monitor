@@ -1,1 +1,0 @@
-Other exception, [Errno 19] No such device'EthHeader' object has no attribute 'w_header'
