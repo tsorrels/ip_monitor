@@ -4,3 +4,4 @@ clean:
 	rm ./test/*.pyc
 	rm ./logs/*
 	rm ./ip_monitor/*~
+	rm ./test/*~

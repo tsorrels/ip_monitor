@@ -3,7 +3,7 @@ from eth_header import EthHeader
 from eth_header import header_size
 
 class EthParser(LinkLayerParser):
-    def __init__(self, state):
+    def __init__(self):
         self.header_size = 14
 
     def parse_header(self, raw_buffer):

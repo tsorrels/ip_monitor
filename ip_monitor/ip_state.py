@@ -74,10 +74,10 @@ class GlobalState(object):
                 self.link_layer_parser = WifiParser()
             else:
                 self.host_address = self.__get_ip_address(self.interface)
-                self.link_layer_parser = EthParser(self)
+                self.link_layer_parser = EthParser()
                 
         except Exception as e:
-            self.logwriter.write('error', 'Other exception, ' + mod + str(e))
+            self.logwriter.write('error', 'Other exception, ' + str(e))
             
             
 
