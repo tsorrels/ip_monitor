@@ -19,7 +19,6 @@ from ip_monitor.logwriter import LogWriter
 from ip_monitor.ip_state import GlobalState
 from ip_monitor.ip_display import Display
 from ip_monitor.ip_controller import Controller
-#from ip_monitor.ip_ethheader import EthHeader
 
 
 
@@ -42,25 +41,25 @@ def sniff(state):
                 continue
             
             link_layer_header = link_layer_parser.parse_header(raw_buffer)
-            w_header = link_layer_header.w_header
-            rt_header = link_layer_header.rt_header
-            llc_header = link_layer_header.llc_header
-            state.logwriter.write('error', str(llc_header.type_field) + '\n')
+            #w_header = link_layer_header.w_header
+            #rt_header = link_layer_header.rt_header
+            #llc_header = link_layer_header.llc_header
+            #state.logwriter.write('error', str(llc_header.type_field) + '\n')
 
             if not link_layer_header.is_parsable():
                 continue
 
-            if rt_header.pad:
-                state.logwriter.write('error', '############## PAD ####' + '\n')
+            #if rt_header.pad:
+                #state.logwriter.write('error', '############## PAD ####' + '\n')
                 
             
             #eth_header = EthHeader(raw_buffer[0:14])
             
             #state.logwriter.write('error', str(len(raw_buffer)) + '\n')
             #state.logwriter.write('error', str(w_header.addr2) + '\n')
-            state.logwriter.write('error', str(w_header.protected) + '\n')
-            state.logwriter.write('error', str(w_header.frame_type) + '\n')
-            state.logwriter.write('error', str(w_header.subtype) + '\n')
+            #state.logwriter.write('error', str(w_header.protected) + '\n')
+            #state.logwriter.write('error', str(w_header.frame_type) + '\n')
+            #state.logwriter.write('error', str(w_header.subtype) + '\n')
             #continue
             if len(raw_buffer) < 34 :
                 # there is no ip header in this packet

@@ -33,3 +33,5 @@ class EthHeader(Structure):
                    format(self.ether_dhost[5],'02x')
 
         
+    def is_parsable(self):
+        return True
