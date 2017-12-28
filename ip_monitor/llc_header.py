@@ -1,4 +1,5 @@
 import struct
+import socket
 from ctypes import *
 
 
@@ -16,3 +17,4 @@ class LlcHeader(Structure):
 
     def __init__(self, socket_buffer = None):
         self.length = 8
+	self.packet_type = socket.ntohs(self.type_field)

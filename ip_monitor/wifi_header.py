@@ -13,7 +13,7 @@ class WifiHeader(object):
             and self.w_header.subtype != 'NullData'
             and self.w_header.subtype != 'NullQoS'
             and not self.w_header.protected
-            and self.llc_header.type_field == 0x0800):
+            and self.llc_header.packet_type == 0x0800):
 
             return True
 

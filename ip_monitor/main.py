@@ -44,6 +44,9 @@ def sniff(state):
             link_layer_header = link_layer_parser.parse_header(raw_buffer)
             w_header = link_layer_header.w_header
             rt_header = link_layer_header.rt_header
+            llc_header = link_layer_header.llc_header
+            state.logwriter.write('error', str(llc_header.type_field) + '\n')
+
             if not link_layer_header.is_parsable():
                 continue
 
