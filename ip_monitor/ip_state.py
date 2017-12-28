@@ -18,6 +18,7 @@ from display_headers import *
 from display_item import *
 from logwriter import LogWriter
 from eth_parser import EthParser
+from wifi_parser import WifiParser
 
 
 class GlobalState(object):
@@ -70,12 +71,13 @@ class GlobalState(object):
 
             if args_dictionary['m']:
                 self.monitor = True
+                self.link_layer_parser = WifiParser()
             else:
                 self.host_address = self.__get_ip_address(self.interface)
-                self.link_layer_parser = EthParser(self)
+                self.link_layer_parser = EthParser()
                 
         except Exception as e:
-            self.logwriter.write('error', 'Other exception, ' + mod + str(e))
+            self.logwriter.write('error', 'Other exception, ' + str(e))
             
             
 
