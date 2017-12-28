@@ -12,7 +12,8 @@ class WifiHeader(object):
         if (self.w_header.frame_type == 'Data'
             and self.w_header.subtype != 'NullData'
             and self.w_header.subtype != 'NullQoS'
-            and not self.w_header.protected):
+            and not self.w_header.protected
+            and self.llc_header.type_field == 0x0800):
 
             return True
 

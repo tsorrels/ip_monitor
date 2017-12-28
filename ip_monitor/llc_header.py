@@ -8,7 +8,7 @@ class LlcHeader(Structure):
         ("ssap", c_ubyte),
         ("control", c_ubyte),        
         ("org_code", c_ubyte * 3),
-        ("type", c_uint16)        
+        ("type_field", c_uint16)        
         ]
     
     def __new__(self, socket_buffer = None):
