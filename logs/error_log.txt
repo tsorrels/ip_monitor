@@ -1,0 +1,14 @@
+cur_index = 38, cur_row = 24, win_start_index = 15
+cur_index = 38, cur_row = 24, win_start_index = 15
+cur_index = 38, cur_row = 24, win_start_index = 15
+cur_index = 38, cur_row = 24, win_start_index = 15
+cur_index = 38, cur_row = 24, win_start_index = 15
+cur_index = 38, cur_row = 24, win_start_index = 15
+cur_index = 38, cur_row = 24, win_start_index = 15
+cur_index = 38, cur_row = 24, win_start_index = 15
+cur_index = 38, cur_row = 24, win_start_index = 15
+cur_index = 38, cur_row = 24, win_start_index = 15
+cur_index = 38, cur_row = 24, win_start_index = 15
+cur_index = 38, cur_row = 24, win_start_index = 15
+cur_index = 38, cur_row = 24, win_start_index = 15
+cur_index = 38, cur_row = 24, win_start_index = 15

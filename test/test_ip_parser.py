@@ -1,6 +1,6 @@
 import unittest
 
-from ip_monitor.wifi_parser import WifiParser
+from ip_monitor.data_layer.wifi_parser import WifiParser
 from ip_monitor.ip_header import IP
 
 class TestWifiParser(unittest.TestCase):

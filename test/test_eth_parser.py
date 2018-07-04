@@ -1,6 +1,6 @@
 import unittest
 
-from ip_monitor.eth_parser import EthParser
+from ip_monitor.data_layer.eth_parser import EthParser
 
 class TestEthParser(unittest.TestCase):
     def setup(self):

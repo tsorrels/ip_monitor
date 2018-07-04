@@ -10,6 +10,10 @@ class WifiParser(LinkLayerParser):
 
     
     def parse_header(self, raw_buffer):
+        #TODO: replace magic number - this is the smallest wifi packet I saw
+	if len(raw_buffer) < 68:
+            return None
+
         rt_header = RadiotapHeader(raw_buffer)
         w_header = WirelessHeader(raw_buffer[rt_header.length:])
         llc_header = LlcHeader(raw_buffer[rt_header.length + w_header.length:])

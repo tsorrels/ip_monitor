@@ -12,7 +12,7 @@ import argparse
 import sys
 
 from ip_monitor.ip_connection import IPConnection
-from ip_monitor.ip_header import IP
+from ip_monitor.ip_parser import IPParser
 from ip_monitor.display_headers import *
 from ip_monitor.display_item import *
 from ip_monitor.logwriter import LogWriter
@@ -32,48 +32,35 @@ def sniff(state):
     sniffer.bind((state.interface, 0))
 
     link_layer_parser = state.link_layer_parser
+    ip_parser = IPParser()
     
     try:        
         while True:
 
             raw_buffer = sniffer.recvfrom(65565)[0]
-            if not (len(raw_buffer) > 68):
-                continue
             
             link_layer_header = link_layer_parser.parse_header(raw_buffer)
-            #w_header = link_layer_header.w_header
-            #rt_header = link_layer_header.rt_header
-            #llc_header = link_layer_header.llc_header
-            #state.logwriter.write('error', str(llc_header.type_field) + '\n')
 
+            if not link_layer_header:
+                continue
+            
             if not link_layer_header.is_parsable():
                 continue
 
-            #if rt_header.pad:
-                #state.logwriter.write('error', '############## PAD ####' + '\n')
-                
+            payload = raw_buffer[link_layer_header.length:]
             
-            #eth_header = EthHeader(raw_buffer[0:14])
-            
-            #state.logwriter.write('error', str(len(raw_buffer)) + '\n')
-            #state.logwriter.write('error', str(w_header.addr2) + '\n')
-            #state.logwriter.write('error', str(w_header.protected) + '\n')
-            #state.logwriter.write('error', str(w_header.frame_type) + '\n')
-            #state.logwriter.write('error', str(w_header.subtype) + '\n')
-            #continue
-            if len(raw_buffer) < 34 :
-                # there is no ip header in this packet
-                state.logwriter.write('error', 'processed non-ip packet\n')
-                continue
-            
-            ip_header = IP(raw_buffer[link_layer_header.length :
-                                      link_layer_header.length + 34])
+            ip_header = ip_parser.parse_header(payload)
 
+            if not ip_header:
+                continue
+
+            payload = payload[ip_header.length:]
+            
             #check if in permiscuous mode
-            if not state.permiscuous:
-                if not (ip_header.src_address == state.host_address or \
-                        ip_header.dst_address == state.host_address):
-                    continue
+            #if not state.permiscuous:
+            #    if not (ip_header.src_address == state.host_address or \
+            #            ip_header.dst_address == state.host_address):
+            #        continue
 
             newConnection = True
             new_time = time.time()
@@ -172,7 +159,7 @@ def main():
         thread.start()
 
     # run UI on this thread
-    #time.sleep(15)
+    time.sleep(15)
     while True:
         #time.sleep(.1)
         display.run()

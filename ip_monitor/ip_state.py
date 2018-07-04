@@ -13,7 +13,6 @@ import socket
 import fcntl
 import struct
 from ip_connection import IPConnection
-from ip_header import IP
 from display_headers import *
 from display_item import *
 from logwriter import LogWriter
