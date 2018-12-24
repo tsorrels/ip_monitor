@@ -13,12 +13,11 @@ import socket
 import fcntl
 import struct
 from ip_connection import IPConnection
-from ip_header import IP
 from display_headers import *
 from display_item import *
 from logwriter import LogWriter
-from eth_parser import EthParser
-from wifi_parser import WifiParser
+from data_layer.eth_parser import EthParser
+from data_layer.wifi_parser import WifiParser
 
 
 class GlobalState(object):

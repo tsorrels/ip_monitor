@@ -12,14 +12,14 @@ import argparse
 import sys
 
 from ip_monitor.ip_connection import IPConnection
-from ip_monitor.ip_header import IP
+#from ip_monitor.ip_parser import IPParser
 from ip_monitor.display_headers import *
 from ip_monitor.display_item import *
 from ip_monitor.logwriter import LogWriter
 from ip_monitor.ip_state import GlobalState
 from ip_monitor.ip_display import Display
 from ip_monitor.ip_controller import Controller
-
+from ip_monitor.packet_parser import PacketParser
 
 
 def sniff(state):
@@ -32,49 +32,26 @@ def sniff(state):
     sniffer.bind((state.interface, 0))
 
     link_layer_parser = state.link_layer_parser
+    packet_parser = PacketParser(link_layer_parser)
     
     try:        
         while True:
 
             raw_buffer = sniffer.recvfrom(65565)[0]
-            if not (len(raw_buffer) > 68):
-                continue
-            
-            link_layer_header = link_layer_parser.parse_header(raw_buffer)
-            #w_header = link_layer_header.w_header
-            #rt_header = link_layer_header.rt_header
-            #llc_header = link_layer_header.llc_header
-            #state.logwriter.write('error', str(llc_header.type_field) + '\n')
 
-            if not link_layer_header.is_parsable():
-                continue
-
-            #if rt_header.pad:
-                #state.logwriter.write('error', '############## PAD ####' + '\n')
-                
+            packet = packet_parser.parse_packet(raw_buffer)
             
-            #eth_header = EthHeader(raw_buffer[0:14])
-            
-            #state.logwriter.write('error', str(len(raw_buffer)) + '\n')
-            #state.logwriter.write('error', str(w_header.addr2) + '\n')
-            #state.logwriter.write('error', str(w_header.protected) + '\n')
-            #state.logwriter.write('error', str(w_header.frame_type) + '\n')
-            #state.logwriter.write('error', str(w_header.subtype) + '\n')
-            #continue
-            if len(raw_buffer) < 34 :
-                # there is no ip header in this packet
-                state.logwriter.write('error', 'processed non-ip packet\n')
-                continue
-            
-            ip_header = IP(raw_buffer[link_layer_header.length :
-                                      link_layer_header.length + 34])
-
             #check if in permiscuous mode
-            if not state.permiscuous:
-                if not (ip_header.src_address == state.host_address or \
-                        ip_header.dst_address == state.host_address):
-                    continue
+            #if not state.permiscuous:
+            #    if not (ip_header.src_address == state.host_address or \
+            #            ip_header.dst_address == state.host_address):
+            #        continue
 
+            ip_header = packet.ip_header
+            link_layer_header = packet.link_header
+            # state.logwriter.write('error', str(ip_header.protocol) + ',' + str(ip_header.total_length) + '\n')
+
+            
             newConnection = True
             new_time = time.time()
             with lock:
@@ -82,7 +59,7 @@ def sniff(state):
                     if ip_header.src == connection.src and \
                     ip_header.dst == connection.dst:
                         # update connection
-                        connection.data += ip_header.length
+                        connection.data += int(ip_header.total_length)
                         connection.time_last = new_time
                         connection.RX = True
                         newConnection = False                        
@@ -172,7 +149,7 @@ def main():
         thread.start()
 
     # run UI on this thread
-    #time.sleep(15)
+    time.sleep(15)
     while True:
         #time.sleep(.1)
         display.run()

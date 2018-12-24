@@ -28,7 +28,8 @@ class IPHeader(Structure):
     def __init__(self, socket_buffer = None):
         self.src_address = socket.inet_ntoa(struct.pack("<L", self.src))
         self.dst_address = socket.inet_ntoa(struct.pack("<L", self.dst))
-        self.length = socket.htons(self.raw_length)
+        self.total_length = socket.htons(self.raw_length)
+        self.length = self.ihl * 32 / 8
         try:
             self.protocol = Protocol_map[self.protocol_num]
         except:
