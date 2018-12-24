@@ -12,14 +12,14 @@ import argparse
 import sys
 
 from ip_monitor.ip_connection import IPConnection
-from ip_monitor.ip_parser import IPParser
+#from ip_monitor.ip_parser import IPParser
 from ip_monitor.display_headers import *
 from ip_monitor.display_item import *
 from ip_monitor.logwriter import LogWriter
 from ip_monitor.ip_state import GlobalState
 from ip_monitor.ip_display import Display
 from ip_monitor.ip_controller import Controller
-
+from ip_monitor.packet_parser import PacketParser
 
 
 def sniff(state):
@@ -32,29 +32,14 @@ def sniff(state):
     sniffer.bind((state.interface, 0))
 
     link_layer_parser = state.link_layer_parser
-    ip_parser = IPParser()
+    packet_parser = PacketParser(link_layer_parser)
     
     try:        
         while True:
 
             raw_buffer = sniffer.recvfrom(65565)[0]
-            
-            link_layer_header = link_layer_parser.parse_header(raw_buffer)
 
-            if not link_layer_header:
-                continue
-            
-            if not link_layer_header.is_parsable():
-                continue
-
-            payload = raw_buffer[link_layer_header.length:]
-            
-            ip_header = ip_parser.parse_header(payload)
-
-            if not ip_header:
-                continue
-
-            payload = payload[ip_header.length:]
+            packet = packet_parser.parse_packet(raw_buffer)
             
             #check if in permiscuous mode
             #if not state.permiscuous:
@@ -62,6 +47,11 @@ def sniff(state):
             #            ip_header.dst_address == state.host_address):
             #        continue
 
+            ip_header = packet.ip_header
+            link_layer_header = packet.link_header
+            # state.logwriter.write('error', str(ip_header.protocol) + ',' + str(ip_header.total_length) + '\n')
+
+            
             newConnection = True
             new_time = time.time()
             with lock:
@@ -69,7 +59,7 @@ def sniff(state):
                     if ip_header.src == connection.src and \
                     ip_header.dst == connection.dst:
                         # update connection
-                        connection.data += ip_header.length
+                        connection.data += int(ip_header.total_length)
                         connection.time_last = new_time
                         connection.RX = True
                         newConnection = False                        

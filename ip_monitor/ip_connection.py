@@ -11,7 +11,7 @@ class IPConnection(object):
         self.dst_address = ipHeader.dst_address
         self.time_begin = time
         self.time_last = time
-        self.data = ipHeader.length
+        self.data = int(ipHeader.length)
         self.state = None
         self.RX = True
 

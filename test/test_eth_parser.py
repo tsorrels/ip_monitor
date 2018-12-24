@@ -16,8 +16,8 @@ class TestEthParser(unittest.TestCase):
         hex_string = fd.read()
         hex_string = hex_string.strip() #remove whitespace from string
         hex_data = (str(hex_string)).decode('hex')
-        expected_src_mac = '0c:8b:fd:75:a7:38'
-        expected_dst_mac = '00:00:ca:11:22:33'
+        expected_src_mac = '70:88:6b:83:75:03'
+        expected_dst_mac = '00:21:29:b6:d8:a6'
         
         eth_header = eth_parser.parse_header(hex_data)
 
