@@ -10,5 +10,6 @@ default_headers = [ HeaderItem("SRCIP", 15),
                     HeaderItem("RX", 4),
                     HeaderItem("DSTIP", 15),
                     HeaderItem("PROTO", 5),
-                    HeaderItem("DATA", 8) ]
+                    HeaderItem("DATA", 8),
+                    HeaderItem("KB/s", 8) ]
 

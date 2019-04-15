@@ -11,6 +11,8 @@ import getopt
 import argparse
 import sys
 
+import calc_kps
+
 from ip_monitor.ip_connection import IPConnection
 #from ip_monitor.ip_parser import IPParser
 from ip_monitor.display_headers import *
@@ -60,6 +62,7 @@ def sniff(state):
                     ip_header.dst == connection.dst:
                         # update connection
                         connection.data += int(ip_header.total_length)
+                        connection.data_temp += int(ip_header.total_length)
                         connection.time_last = new_time
                         connection.RX = True
                         newConnection = False                        
@@ -133,6 +136,11 @@ def main():
     sniffer = threading.Thread(target = sniff, args = (state,))
     sniffer.daemon = True
     sniffer.start()
+
+    kps_thread = threading.Thread(target = calc_kps.run, args = (state.all_connections, state.logwriter))
+    kps_thread.daemon = True
+    kps_thread.start()
+    
     #thread_icmp.daemon = True
     #thread_tcp.daemon = True
     #thread_udp.daemon = True
@@ -149,7 +157,7 @@ def main():
         thread.start()
 
     # run UI on this thread
-    time.sleep(15)
+    time.sleep(3)
     while True:
         #time.sleep(.1)
         display.run()
