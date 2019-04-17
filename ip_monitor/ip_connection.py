@@ -12,9 +12,11 @@ class IPConnection(object):
         self.time_begin = time
         self.time_last = time
         self.data = int(ipHeader.length)
+        self.data_temp = 0
         self.state = None
         self.RX = True
-
+        self.kps = 0
+        
         self.attr_names = []
         self.__populate_core_attr()	
 
@@ -29,3 +31,4 @@ class IPConnection(object):
         self.attr_names.append('dst_address')
         self.attr_names.append('proto')
         self.attr_names.append('data')
+        self.attr_names.append('kps')
